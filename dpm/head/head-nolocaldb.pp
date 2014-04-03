@@ -3,26 +3,13 @@ $mysql_root_pass = "mypass"
 $db_user = "dpmmgr"
 $db_pass = "mypass"
 $db_host = "remotehost"
-$domain  = "mydomain"
+$mydomain  = "mydomain"
 $localdomain = "${::fqdn}"
 $volist = ["dteam", "atlas"]
 $disk_nodes = "${::fqdn}"
 $xrootd_sharedkey = "A32TO64CHARACTERKEY"
 $debug = false
 
- firewall{"050 allow DPM":
- {
-    state  => "NEW",
-    proto  => "tcp",
-    dport  => "5010",
-    action => "accept"
-  }
-  firewall{"050 allow DPM":
-    state  => "NEW",
-    proto  => "tcp",
-    dport  => "5015",
-    action => "accept"
-  }
 
   Class[Lcgdm::Dpm::Service] -> Class[Dmlite::Plugins::Adapter::Install]
   Class[Dmlite::Plugins::Adapter::Install] ~> Class[Dmlite::Dav::Service]
@@ -36,7 +23,7 @@ $debug = false
   Class[Lcgdm::Ns::Service] -> Class[Lcgdm::Ns::Client]
   Class[Lcgdm::Dpm::Service] -> Lcgdm::Ns::Domain <| |>
   Lcgdm::Ns::Domain <| |> -> Lcgdm::Ns::Vo <| |>
-  Class[Mysql::Server] -> Class[Lcgdm::Ns::Install]
+  #$Class[Mysql::Server] -> Class[Lcgdm::Ns::Install]
 
 
   #
@@ -63,9 +50,9 @@ $debug = false
   #
   # Create path for domain and VOs to be enabled.
   #
-  lcgdm::ns::domain{$domain:}
+  lcgdm::ns::domain{$mydomain:}
   lcgdm::ns::vo{$volist:
-    domain => $domain,
+    domain => $mydomain,
   }
 
   #
@@ -86,13 +73,13 @@ $debug = false
   lcgdm::shift::trust_value{
     "DPM TRUST":
       component => "DPM",
-      host      => "${disk_nodes}"
+      host      => "${disk_nodes}";
     "DPNS TRUST":
       component => "DPNS",
-      host      => "${disk_nodes}"
+      host      => "${disk_nodes}";
     "RFIO TRUST":
       component => "RFIOD",
-      host      => "${disk_nodes}"
+      host      => "${disk_nodes}",
       all       => true;
   }
   lcgdm::shift::protocol{"PROTOCOLS":
@@ -153,8 +140,8 @@ $debug = false
 
   class{"dmlite::xrootd":
     nodetype             => $nodetype,
-    domain               => "${disk_nodes}"
-    dpm_xrootd_sharedkey => "${xrootd_sharedkey}"
+    domain               => "${disk_nodes}",
+    dpm_xrootd_sharedkey => "${xrootd_sharedkey}",
   }
 
   #
@@ -162,4 +149,3 @@ $debug = false
   #
   class{"dmlite::shell":}
 
-}
