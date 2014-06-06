@@ -1,5 +1,5 @@
 #
-# This is an example configuration for a DPM Disk Node.
+# This is an example configuration for a DPM Disk Node when upgrading an existing installation configured with YAIM/or adding a new Disk node to an instellation previously configured with YAIM
 #
 # You can check the puppet module 'lcgdm' and 'dmlite' for any additional options available.
 # !! Please replace the placeholders for usernames and passwords !!
@@ -82,10 +82,11 @@ firewall{"050 allow DPM":
 }
 
 #
-# lcgdm configuration.
+# lcgdm configuration, we explicitly set uid to 151 for the dpmmgr user cause it's the default used by YAIM
 #
-class{"lcgdm::base::config":}
-class{"lcgdm::base::install":}
+class{"lcgdm::base":
+    uid => 151,
+}
 
 class{"lcgdm::ns::client":
   flavor  => "dpns",
@@ -176,6 +177,7 @@ class{"xrootd::config":
   xrootd_user  => 'dpmmgr',
   xrootd_group => 'dpmmgr'
 }
+
 class{"dmlite::xrootd":
   nodetype              => [ 'disk' ],
   domain                => "${localdomain}",

@@ -1,14 +1,13 @@
 #
-# This is an example configuration for a DPM Disk Node.
+# This is an example configuration for a DPM Head Node when upgrading an existing installation configured with YAIM
 #
-# You can check the puppet module 'lcgdm' and 'dmlite' for any additional options available.
+# You can check the puppet modules 'lcgdm' and 'dmlite' for any additional options available.
 # !! Please replace the placeholders for usernames and passwords !!
 #
 
 #
 # The standard variables are collected here:
 #
-$headnode_fqdn = "HEADNODE"
 $token_password = "TOKEN_PASSWORD"
 $mysql_root_pass = "PASS"
 $db_user = "dpmmgr"
@@ -19,9 +18,18 @@ $disk_nodes = "${::fqdn} dpmdisk01.cern.ch dpmdisk02.cern.ch"
 $xrootd_sharedkey = "A32TO64CHARACTERKEY"
 $debug = false
 
-Class[Lcgdm::Base::Install] -> Class[Lcgdm::Rfio::Install]
-Class[Dmlite::Plugins::Adapter::Install] ~> Class[Dmlite::Dav::Service]
+#
+# Set inter-module dependencies
+#
+Class[Mysql::Server] -> Class[Lcgdm::Ns::Service]
+#Class[Lcgdm::Dpm::Service] -> Lcgdm::Dpm::Pool <| |>
+Class[Lcgdm::Dpm::Service] -> Class[Dmlite::Plugins::Adapter::Install]
+Class[Dmlite::Plugins::Adapter::Install] ~> Class[Dmlite::Srm]
 Class[Dmlite::Plugins::Adapter::Install] ~> Class[Dmlite::Gridftp]
+Class[Dmlite::Plugins::Adapter::Install] ~> Class[Dmlite::Dav]
+Class[Dmlite::Plugins::Mysql::Install] ~> Class[Dmlite::Srm]
+Class[Dmlite::Plugins::Mysql::Install] ~> Class[Dmlite::Gridftp]
+Class[Dmlite::Plugins::Mysql::Install] ~> Class[Dmlite::Dav]
 
 #
 # The firewall configuration
@@ -55,6 +63,12 @@ firewall{"050 allow gridftp range":
   dport  => "20000-25000",
   action => "accept"
 }
+firewall{"050 allow srmv2.2":
+  state  => "NEW",
+  proto  => "tcp",
+  dport  => "8446",
+  action => "accept"
+}
 firewall{"050 allow xrootd":
   state  => "NEW",
   proto  => "tcp",
@@ -82,22 +96,48 @@ firewall{"050 allow DPM":
 }
 
 #
-# lcgdm configuration.
+# MySQL server setup - disable if it is not local
 #
-class{"lcgdm::base::config":}
-class{"lcgdm::base::install":}
+class{"mysql::server":
+  service_enabled => true,
+  root_password   => "${mysql_root_pass}"
+}
 
-class{"lcgdm::ns::client":
-  flavor  => "dpns",
-  dpmhost => "${headnode_fqdn}"
+#
+# DPM and DPNS daemon configuration.
+#
+class{"lcgdm":
+  dbflavor => "mysql",
+  dbuser   => "${db_user}",
+  dbpass   => "${db_pass}",
+  dbhost   => "localhost",
+  domain   => "${localdomain}",
+  volist   => $volist,
+  uid      => 151,
 }
 
 #
 # RFIO configuration.
 #
 class{"lcgdm::rfio":
-  dpmhost => "${headnode_fqdn}",
+  dpmhost => "${::fqdn}",
 }
+
+#
+# You can define your pools here (example is commented).
+#
+#lcgdm::dpm::pool{"mypool":
+#  def_filesize => "100M"
+#}
+#
+#
+# You can define your filesystems here (example is commented).
+#
+#lcgdm::dpm::filesystem {"${fqdn}-myfsname":
+#  pool   => "mypool",
+#  server => "${fqdn}",
+#  fs     => "/fslocation"
+#}
 
 #
 # Entries in the shift.conf file, you can add in 'host' below the list of
@@ -106,13 +146,13 @@ class{"lcgdm::rfio":
 lcgdm::shift::trust_value{
   "DPM TRUST":
     component => "DPM",
-    host      => "${headnode_fqdn} ${disk_nodes}";
+    host      => "${disk_nodes}";
   "DPNS TRUST":
     component => "DPNS",
-    host      => "${headnode_fqdn} ${disk_nodes}";
+    host      => "${disk_nodes}";
   "RFIO TRUST":
     component => "RFIOD",
-    host      => "${headnode_fqdn} ${disk_nodes}",
+    host      => "${disk_nodes}",
     all       => true
 }
 lcgdm::shift::protocol{"PROTOCOLS":
@@ -150,20 +190,23 @@ lcgdm::mkgridmap::file {"lcgdm-mkgridmap":
 }
 
 #
-# dmlite plugin configuration.
-class{"dmlite::disk":
+# dmlite configuration.
+#
+class{"dmlite::head":
   token_password => "${token_password}",
-  dpmhost        => "${headnode_fqdn}",
-  nshost         => "${headnode_fqdn}",
+  mysql_username => "${db_user}",
+  mysql_password => "${db_pass}",
 }
 
 #
-# dmlite frontend configuration.
+# Frontends based on dmlite.
 #
 class{"dmlite::dav":}
+class{"dmlite::srm":}
 class{"dmlite::gridftp":
-  dpmhost => "${headnode_fqdn}"
+  dpmhost => "${::fqdn}"
 }
+
 
 # The XrootD configuration is a bit more complicated and
 # the full config (incl. federations) will be explained here:
@@ -177,7 +220,7 @@ class{"xrootd::config":
   xrootd_group => 'dpmmgr'
 }
 class{"dmlite::xrootd":
-  nodetype              => [ 'disk' ],
+  nodetype              => [ 'head' ],
   domain                => "${localdomain}",
   dpm_xrootd_debug      => $debug,
   dpm_xrootd_sharedkey  => "${xrootd_sharedkey}"
