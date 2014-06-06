@@ -82,6 +82,24 @@ firewall{"050 allow DPM":
 }
 
 #
+# lcgdm mountpoints configuration
+Class[Lcgdm::Base::Config] ->
+file {
+   "/srv/dpm":
+   ensure => directory,
+   owner => "dpmmgr",
+   group => "dpmmgr",
+   mode =>  0775;
+   "/srv/dpm/01":
+   ensure => directory,
+   owner => "dpmmgr",
+   group => "dpmmgr",
+   seltype => "httpd_sys_content_t",
+   mode => 0775;
+}
+
+
+#
 # lcgdm configuration, we explicitly set uid to 151 for the dpmmgr user cause it's the default used by YAIM
 #
 class{"lcgdm::base":
