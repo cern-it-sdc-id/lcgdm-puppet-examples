@@ -19,6 +19,8 @@ $disk_nodes = "${::fqdn} dpmdisk01.cern.ch dpmdisk02.cern.ch"
 $xrootd_sharedkey = "A32TO64CHARACTERKEY"
 $debug = false
 
+
+
 Class[Lcgdm::Base::Install] -> Class[Lcgdm::Rfio::Install]
 Class[Dmlite::Plugins::Adapter::Install] ~> Class[Dmlite::Dav::Service]
 Class[Dmlite::Plugins::Adapter::Install] ~> Class[Dmlite::Gridftp]
@@ -79,6 +81,23 @@ firewall{"050 allow DPM":
   proto  => "tcp",
   dport  => "5015",
   action => "accept"
+}
+
+#
+# lcgdm mountpoints configuration
+Class[Lcgdm::Base::Config] ->
+file {
+   "/srv/dpm":
+   ensure => directory,
+   owner => "dpmmgr",
+   group => "dpmmgr",   
+   mode =>  0775;
+   "/srv/dpm/01":
+   ensure => directory,
+   owner => "dpmmgr",
+   group => "dpmmgr",
+   seltype => "httpd_sys_content_t",
+   mode => 0775;
 }
 
 #
