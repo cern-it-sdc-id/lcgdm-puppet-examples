@@ -17,12 +17,11 @@ $volist = ["dteam", "atlas", "lhcb"]
 $disk_nodes = "${::fqdn} dpmdisk01.cern.ch dpmdisk02.cern.ch"
 $xrootd_sharedkey = "A32TO64CHARACTERKEY"
 $debug = false
+$local_db = true
 
 #
 # Set inter-module dependencies
 #
-Class[Mysql::Server] -> Class[Lcgdm::Ns::Service]
-#Class[Lcgdm::Dpm::Service] -> Lcgdm::Dpm::Pool <| |>
 Class[Lcgdm::Dpm::Service] -> Class[Dmlite::Plugins::Adapter::Install]
 Class[Dmlite::Head] -> Class[Dmlite::Plugins::Adapter::Install]
 Class[Dmlite::Plugins::Adapter::Install] ~> Class[Dmlite::Srm]
@@ -99,9 +98,12 @@ firewall{"050 allow DPM":
 #
 # MySQL server setup - disable if it is not local
 #
-class{"mysql::server":
-  service_enabled => true,
-  root_password   => "${mysql_root_pass}"
+if ($local_db) {
+  Class[Mysql::Server] -> Class[Lcgdm::Ns::Service]
+  class{"mysql::server":
+    service_enabled => true,
+    root_password   => "${mysql_root_pass}"
+  }
 }
 
 #
@@ -126,6 +128,7 @@ class{"lcgdm::rfio":
 #
 # You can define your pools here (example is commented).
 #
+#Class[Lcgdm::Dpm::Service] -> Lcgdm::Dpm::Pool <| |>
 #lcgdm::dpm::pool{"mypool":
 #  def_filesize => "100M"
 #}
