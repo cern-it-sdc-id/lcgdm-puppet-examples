@@ -24,6 +24,7 @@ $debug = false
 Class[Mysql::Server] -> Class[Lcgdm::Ns::Service]
 #Class[Lcgdm::Dpm::Service] -> Lcgdm::Dpm::Pool <| |>
 Class[Lcgdm::Dpm::Service] -> Class[Dmlite::Plugins::Adapter::Install]
+Class[Dmlite::Head] -> Class[Dmlite::Plugins::Adapter::Install]
 Class[Dmlite::Plugins::Adapter::Install] ~> Class[Dmlite::Srm]
 Class[Dmlite::Plugins::Adapter::Install] ~> Class[Dmlite::Gridftp]
 Class[Dmlite::Plugins::Adapter::Install] ~> Class[Dmlite::Dav]
