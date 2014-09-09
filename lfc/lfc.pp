@@ -52,7 +52,7 @@ class{"mysql::server":
 #
 # lcgdm configuration
 #
-class{"lcgdm::base::config":
+class{"lcgdm::base":
   cert    => "lfccert.pem",
   certkey => "lfckey.pem",
   user    => "lfcmgr"
@@ -79,12 +79,9 @@ class{"dmlite::lfc":
 class{"dmlite::plugins::librarian":}
 
 #
-# Create path for domain and VOs to be enabled.
+# Create path for VOs to be enabled.
 #
-lcgdm::ns::domain{"${localdomain}":}
-lcgdm::ns::vo{$volist:
-  domain  => "${localdomain}",
-}
+lcgdm::ns::domain{$volist:}
 
 #
 # Frontends based on dmlite.
