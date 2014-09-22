@@ -247,6 +247,15 @@ class{"dmlite::xrootd":
   dpm_xrootd_sharedkey  => "${xrootd_sharedkey}"
 }
 
+# BDII
+include('bdii')
+   
+# DPM GIP config
+class{"lcgdm::bdii::dpm":
+     sitename  => "CERN-DPM-TESTBED",
+     vos => [ "dteam", "atlas" ] 
+}
+
 #
 # dmlite shell configuration.
 #
