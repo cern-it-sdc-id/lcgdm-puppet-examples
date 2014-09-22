@@ -94,12 +94,6 @@ firewall{"050 allow DPM":
   dport  => "5015",
   action => "accept"
 }
-firewall{"050 allow DAV":
-  state  => "NEW",
-  proto  => "tcp",
-  dport  => "[80,443]",
-  action => "accept"
-}
 
 #
 # MySQL server setup - disable if it is not local
