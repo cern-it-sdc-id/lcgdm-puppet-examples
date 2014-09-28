@@ -1,5 +1,5 @@
 #
-# This is an example configuration for a DPM Head Node.
+# This is an example configuration for a DPM Head + Disk Node  
 #
 # You can check the puppet modules 'lcgdm' and 'dmlite' for any additional options available.
 # !! Please replace the placeholders for usernames and passwords !!
@@ -15,7 +15,7 @@ $db_pass = "MYSQLPASS"
 $localdomain = "cern.ch"
 $volist = ["dteam", "atlas"]
 $disk_nodes = "${::fqdn}"
-$xrootd_sharedkey = "A32TO64CHARACTERKEYTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTEST"
+$xrootd_sharedkey = "A32TO64CHARACTERKEYTESTTESTTESTTEST"
 $debug = false
 $local_db = true
 
@@ -27,6 +27,7 @@ Class[Dmlite::Head] -> Class[Dmlite::Plugins::Adapter::Install]
 Class[Dmlite::Plugins::Adapter::Install] ~> Class[Dmlite::Srm]
 Class[Dmlite::Plugins::Adapter::Install] ~> Class[Dmlite::Gridftp]
 Class[Dmlite::Plugins::Adapter::Install] ~> Class[Dmlite::Dav]
+Class[Dmlite::Plugins::Adapter::Config] -> Class[Dmlite::Dav::Service]
 Class[Dmlite::Plugins::Mysql::Install] ~> Class[Dmlite::Srm]
 Class[Dmlite::Plugins::Mysql::Install] ~> Class[Dmlite::Gridftp]
 Class[Dmlite::Plugins::Mysql::Install] ~> Class[Dmlite::Dav]
@@ -124,6 +125,8 @@ class{"lcgdm":
 class{"lcgdm::rfio":
   dpmhost => "${::fqdn}",
 }
+
+
 
 #
 # You can define your pools here (example is commented).
