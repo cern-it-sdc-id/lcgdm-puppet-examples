@@ -16,7 +16,7 @@ $db_pass = "MYSQLPASS"
 $localdomain = "cern.ch"
 $volist = ["dteam", "atlas", "lhcb"]
 $disk_nodes = "${::fqdn} dpmdisk01.cern.ch dpmdisk02.cern.ch"
-$xrootd_sharedkey = "A32TO64CHARACTERKEY"
+$xrootd_sharedkey = "A32TO64CHARACTERKEYTESTTESTTESTTEST"
 $debug = false
 
 Class[Lcgdm::Base::Install] -> Class[Lcgdm::Rfio::Install]
