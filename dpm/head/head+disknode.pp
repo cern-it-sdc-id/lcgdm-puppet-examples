@@ -204,9 +204,11 @@ lcgdm::mkgridmap::file {"lcgdm-mkgridmap":
   localmapfile => "/etc/lcgdm-mapfile-local",
   logfile      => "/var/log/lcgdm-mkgridmap.log",
   groupmap     => $groupmap,
-  localmap     => {"nobody" => "nogroup", 
-		   "/DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=aalvarez/CN=678984/CN=Alejandro Alvarez Ayllon" => "dteam",
-                   "/DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=saketag/CN=678984/CN=Alejandro Alvarez Ayllon" => "dteam" }
+  localmap     => {"nobody" => "nogroup"},
+}
+
+exec{"/usr/sbin/edg-mkgridmap --conf=/etc/lcgdm-mkgridmap.conf --safe --output=/etc/lcgdm-mapfile":
+        require => Lcgdm::Mkgridmap::File["lcgdm-mkgridmap"]
 }
 
 #
