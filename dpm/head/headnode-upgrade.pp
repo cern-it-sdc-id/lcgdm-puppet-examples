@@ -27,9 +27,11 @@ Class[Dmlite::Head] -> Class[Dmlite::Plugins::Adapter::Install]
 Class[Dmlite::Plugins::Adapter::Install] ~> Class[Dmlite::Srm]
 Class[Dmlite::Plugins::Adapter::Install] ~> Class[Dmlite::Gridftp]
 Class[Dmlite::Plugins::Adapter::Install] ~> Class[Dmlite::Dav]
+Dmlite::Plugins::Adapter::Create_config <| |> -> Class[Dmlite::Dav]
 Class[Dmlite::Plugins::Mysql::Install] ~> Class[Dmlite::Srm]
 Class[Dmlite::Plugins::Mysql::Install] ~> Class[Dmlite::Gridftp]
-Class[Dmlite::Plugins::Mysql::Install] -> Class[Dmlite::Dav]
+Class[Dmlite::Plugins::Mysql::Install] ~> Class[Dmlite::Dav]
+Class[fetchcrl::service]-> Class[Xrootd::Config]
 
 #
 # The firewall configuration

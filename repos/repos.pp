@@ -34,4 +34,11 @@
       enabled  => 1,
       priority => 45,
       gpgcheck => 0;
+    "wlcg":
+      descr    => "WLCG Repository",
+      baseurl  => "http://linuxsoft.cern.ch/wlcg/sl6/\$basearch",
+      protect  => 1,
+      enabled  => 1,
+      priority => 20,
+      gpgcheck => 0;
   }
