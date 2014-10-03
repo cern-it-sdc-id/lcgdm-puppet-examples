@@ -33,7 +33,8 @@ Class[Dmlite::Plugins::Mysql::Install] ~> Class[Dmlite::Gridftp]
 Class[Dmlite::Plugins::Mysql::Install] -> Class[Dmlite::Dav]
 Class[Bdii::Install] -> Class[Lcgdm::Bdii::Dpm]
 Class[Lcgdm::Bdii::Dpm] -> Class[Bdii::Service]
-Class[fetchcrl::service]-> Class[Xrootd::Config]
+Class[fetchcrl::service] -> Class[Xrootd::Config]
+Class[Lcgdm::Ns::Config] -> Class[Dmlite::Srm::Service]
 #
 # The firewall configuration
 #
