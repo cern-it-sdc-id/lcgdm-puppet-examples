@@ -263,4 +263,4 @@ class{"lcgdm::bdii::dpm":
 #
 # dmlite shell configuration.
 #
-#class{"dmlite::shell":}
+class{"dmlite::shell":}
