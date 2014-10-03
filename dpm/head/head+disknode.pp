@@ -23,6 +23,8 @@ $local_db = true
 # Set inter-module dependencies
 #
 Class[Lcgdm::Dpm::Service] -> Class[Dmlite::Plugins::Adapter::Install]
+Class[Lcgdm::Ns::Service] -> Class[Lcgdm::Dpm::Service]
+Class[Lcgdm::Dpm::Service] -> Class[Dmlite::Srm::Service]
 Class[Dmlite::Head] -> Class[Dmlite::Plugins::Adapter::Install]
 Class[Dmlite::Plugins::Adapter::Install] ~> Class[Dmlite::Srm]
 Class[Dmlite::Plugins::Adapter::Install] ~> Class[Dmlite::Gridftp]
@@ -34,7 +36,6 @@ Class[Dmlite::Plugins::Mysql::Install] -> Class[Dmlite::Dav]
 Class[Bdii::Install] -> Class[Lcgdm::Bdii::Dpm]
 Class[Lcgdm::Bdii::Dpm] -> Class[Bdii::Service]
 Class[fetchcrl::service] -> Class[Xrootd::Config]
-Class[Lcgdm::Ns::Config] -> Class[Dmlite::Srm::Service]
 #
 # The firewall configuration
 #
