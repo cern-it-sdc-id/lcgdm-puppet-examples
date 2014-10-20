@@ -36,7 +36,7 @@ Class[Bdii::Install] -> Class[Lcgdm::Bdii::Dpm]
 Class[Lcgdm::Bdii::Dpm] -> Class[Bdii::Service]
 Class[fetchcrl::service] -> Class[Xrootd::Config]
 #memcache deps
-Class[Lcgdm::Base::Config] ~> Class[Dmlite::Plugins::Memcache::Install]
+Class[Lcgdm::Base::Config] -> Class[Dmlite::Params]
 Class[Dmlite::Plugins::Memcache::Install] ~> Class[Dmlite::Dav::Service]    
 Class[Dmlite::Plugins::Memcache::Install] ~> Class[Dmlite::Gridftp]
 Class[Dmlite::Plugins::Memcache::Install] ~> Class[Dmlite::Srm]
