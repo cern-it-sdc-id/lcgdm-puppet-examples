@@ -124,6 +124,8 @@ class{"dmlite::plugins::memcache":
       expiration_limit => 600,
       posix            => 'on',
       func_counter     => 'on',
+      user             => "dpmmgr",
+      group            => "dpmmgr",
 }
 
 #
