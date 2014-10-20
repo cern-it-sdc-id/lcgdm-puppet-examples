@@ -36,7 +36,6 @@ Class[Bdii::Install] -> Class[Lcgdm::Bdii::Dpm]
 Class[Lcgdm::Bdii::Dpm] -> Class[Bdii::Service]
 Class[fetchcrl::service] -> Class[Xrootd::Config]
 #memcache deps
-Class[Lcgdm::Base::Config] ~> Class[Dmlite::Plugins::Memcache]
 Class[Dmlite::Plugins::Memcache::Install] ~> Class[Dmlite::Dav::Service]    
 Class[Dmlite::Plugins::Memcache::Install] ~> Class[Dmlite::Gridftp]
 Class[Dmlite::Plugins::Memcache::Install] ~> Class[Dmlite::Srm]
@@ -116,17 +115,6 @@ if ($local_db) {
   }
 }
 
-class{"memcached":
-    max_memory => 512,
-}
- ->
-class{"dmlite::plugins::memcache":
-      expiration_limit => 600,
-      posix            => 'on',
-      func_counter     => 'on',
-      user             => "dpmmgr",
-      group            => "dpmmgr",
-}
 
 #
 # DPM and DPNS daemon configuration.
@@ -282,3 +270,14 @@ class{"lcgdm::bdii::dpm":
 # dmlite shell configuration.
 #
 class{"dmlite::shell":}
+
+Class[Lcgdm::Base::Config] ->
+class{"memcached":
+    max_memory => 512,
+}
+ ->
+class{"dmlite::plugins::memcache":
+      expiration_limit => 600,
+      posix            => 'on',
+      func_counter     => 'on',
+}
