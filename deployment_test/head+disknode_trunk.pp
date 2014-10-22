@@ -126,6 +126,8 @@ class{"lcgdm":
   dbhost   => "localhost",
   domain   => "${localdomain}",
   volist   => $volist,
+  uid      => 151,
+  gid      => 160,
 }
 
 #
