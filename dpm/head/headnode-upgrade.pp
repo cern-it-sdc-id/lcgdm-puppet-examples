@@ -31,6 +31,8 @@ Dmlite::Plugins::Adapter::Create_config <| |> -> Class[Dmlite::Dav::Install]
 Class[Dmlite::Plugins::Mysql::Install] ~> Class[Dmlite::Srm]
 Class[Dmlite::Plugins::Mysql::Install] ~> Class[Dmlite::Gridftp]
 Class[Dmlite::Plugins::Mysql::Install] ~> Class[Dmlite::Dav]
+Class[Bdii::Install] -> Class[Lcgdm::Bdii::Dpm]
+Class[Lcgdm::Bdii::Dpm] -> Class[Bdii::Service]
 Class[fetchcrl::service]-> Class[Xrootd::Config]
 
 #
@@ -231,7 +233,14 @@ class{"dmlite::xrootd":
   dpm_xrootd_debug      => $debug,
   dpm_xrootd_sharedkey  => "${xrootd_sharedkey}"
 }
-
+# BDII
+include('bdii')
+   
+# DPM GIP config
+class{"lcgdm::bdii::dpm":
+     sitename  => "CERN-DPM-TESTBED",
+     vos => [ "dteam", "atlas" ] 
+}
 #
 # dmlite shell configuration.
 #
