@@ -97,11 +97,10 @@ class{"voms::atlas":}
 #
 # Gridmapfile configuration.
 #
-class{"lcgdm::mkgridmap::install":}
 $groupmap = {
-  "vomss://voms.hellasgrid.gr:8443/voms/dteam?/dteam/Role=lcgadmin"   => "dteam",
-  "vomss://voms.hellasgrid.gr:8443/voms/dteam?/dteam/Role=production" => "dteam",
-  "vomss://voms.hellasgrid.gr:8443/voms/dteam?/dteam"                 => "dteam"
+  "vomss://voms.hellasgrid.gr:8443/voms/dteam?/dteam"                 => "dteam",
+  "vomss://voms2.cern.ch:8443/voms/atlas?/atlas"                      => "atlas",
+  "vomss://lcg-voms2.cern.ch:8443/voms/atlas?/atlas"                  => "atlas"
 }
 lcgdm::mkgridmap::file {"lcgdm-mkgridmap":
   configfile   => "/etc/lcgdm-mkgridmap.conf",
