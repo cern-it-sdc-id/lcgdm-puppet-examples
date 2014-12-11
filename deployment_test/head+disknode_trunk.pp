@@ -256,7 +256,7 @@ class{"dmlite::xrootd":
   domain                => "${localdomain}",
   dpm_xrootd_debug      => $debug,
   dpm_xrootd_sharedkey  => "${xrootd_sharedkey}",
-  vomsxrd_package       => "vomsxrd4",
+  vomsxrd_package       => "vomsxrd",
 }
 
 # BDII
