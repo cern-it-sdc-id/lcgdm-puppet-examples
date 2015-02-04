@@ -199,7 +199,7 @@ class{"dmlite::xrootd":
   nodetype              => [ 'disk' ],
   domain                => "${localdomain}",
   dpm_xrootd_debug      => $debug,
-  dpm_xrootd_sharedkey  => "${xrootd_sharedkey}"
+  dpm_xrootd_sharedkey  => "${xrootd_sharedkey}",
 }
 
 #
