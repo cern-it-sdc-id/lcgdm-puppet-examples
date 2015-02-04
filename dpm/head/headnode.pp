@@ -232,7 +232,7 @@ include('bdii')
 # DPM GIP config
 class{"lcgdm::bdii::dpm":
      sitename  => "CERN-DPM-TESTBED",
-     vos => [ "dteam", "atlas" ] 
+     vos => $volist
 }
 
 
