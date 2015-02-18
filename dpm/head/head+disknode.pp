@@ -258,6 +258,23 @@ class{"lcgdm::bdii::dpm":
      vos => $volist
 }
 
+#memcache configuration
+Class[Dmlite::Plugins::Memcache::Install] ~> Class[Dmlite::Dav::Service]
+Class[Dmlite::Plugins::Memcache::Install] ~> Class[Dmlite::Gridftp]
+Class[Dmlite::Plugins::Memcache::Install] ~> Class[Dmlite::Srm]
+
+Class[Lcgdm::Base::Config]
+->
+class{"memcached":
+   max_memory => 2000,
+   listen_ip  => "127.0.0.1",
+   }
+->
+class{"dmlite::plugins::memcache":
+   expiration_limit => 600,
+   posix            => 'on',
+   }
+
 #
 # dmlite shell configuration.
 #
