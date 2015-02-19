@@ -113,7 +113,7 @@ if ($local_db) {
   #adding perf tunings
   $override_options = {
   'mysqld' => {
-    ‘max_connections'    => '1000',
+    'max_connections'    => '1000',
     'query_cache_size'   => '256M',
     'query_cache_limit'  => '1MB',
     'innodb_flush_method' => 'O_DIRECT',
