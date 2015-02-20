@@ -104,9 +104,22 @@ firewall{"050 allow DPM":
 #
 if ($local_db) {
   Class[Mysql::Server] -> Class[Lcgdm::Ns::Service]
+
+  #adding perf tunings
+  $override_options = {
+  'mysqld' => {
+    'max_connections'    => '1000',
+    'query_cache_size'   => '256M',
+    'query_cache_limit'  => '1MB',
+    'innodb_flush_method' => 'O_DIRECT',
+    'innodb_buffer_pool_size' => '1000000000',
+  }
+ }
+  
   class{"mysql::server":
     service_enabled => true,
-    root_password   => "${mysql_root_pass}"
+    root_password   => "${mysql_root_pass}",
+    override_options  => $override_options
   }
 }
 
@@ -258,3 +271,17 @@ class{"dmlite::plugins::memcache":
 # dmlite shell configuration.
 #
 #class{"dmlite::shell":}
+
+#limit conf
+
+$limits_config = {
+    "*" => {
+      nofile => { soft => 65000, hard => 65000 },
+      nproc  => { soft => 65000, hard => 65000 },
+    }
+  }
+  class{'limits':
+    config    => $limits_config,
+    use_hiera => false
+  }
+

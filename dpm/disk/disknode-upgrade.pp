@@ -201,3 +201,18 @@ class{"dmlite::xrootd":
 # dmlite shell configuration.
 #
 #class{"dmlite::shell":}
+
+#limit conf
+
+$limits_config = {
+    "*" => {
+      nofile => { soft => 65000, hard => 65000 },
+      nproc  => { soft => 65000, hard => 65000 },
+    }
+  }
+  class{'limits':
+    config    => $limits_config,
+    use_hiera => false
+  }
+
+
