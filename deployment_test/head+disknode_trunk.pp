@@ -217,7 +217,7 @@ $groupmap = {
   "vomss://voms.hellasgrid.gr:8443/voms/dteam?/dteam"                 => "dteam",
   "vomss://voms2.hellasgrid.gr:8443/voms/dteam?/dteam"                 => "dteam",
   "vomss://voms2.cern.ch:8443/voms/atlas?/atlas"                      => "atlas",
-  "vomss://lcg-vom2.cern.ch:8443/voms/atlas?/atlas"                   => "atlas",
+  "vomss://lcg-voms2.cern.ch:8443/voms/atlas?/atlas"                   => "atlas",
 }
 
 lcgdm::mkgridmap::file {"lcgdm-mkgridmap":
