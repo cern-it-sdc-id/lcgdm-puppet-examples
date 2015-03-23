@@ -22,11 +22,17 @@ $local_db = true
 #
 # Set inter-module dependencies
 #
-Class[Dmlite::Plugins::Hdfs::Install] ~> Class[Dmlite::Gridftp]
-Class[Dmlite::Plugins::Hdfs::Install] -> Class[Dmlite::Dav]
-Class[Dmlite::Plugins::Mysql::Install] ~> Class[Dmlite::Gridftp]
-Class[Dmlite::Plugins::Mysql::Install] -> Class[Dmlite::Dav]
-Class[Dmlite::Plugins::Hdfs::Config]  -> Class[Dmlite::Dav::Install]
+Class[Dmlite::Plugins::Hdfs::Install] -> Class[Dmlite::Gridftp]
+Class[Dmlite::Plugins::Hdfs::Install] -> Class[Dmlite::Dav::Config]
+Class[Dmlite::Plugins::Hdfs::Install] -> Class[Xrootd::Config]
+Class[Dmlite::Plugins::Mysql::Install] -> Class[Dmlite::Gridftp]
+Class[Dmlite::Plugins::Mysql::Install] -> Class[Dmlite::Dav::Config]
+Class[Dmlite::Plugins::Mysql::Install] ->  Class[Xrootd::Config]
+
+Class[Dmlite::Plugins::Hdfs::Config]  -> Class[Dmlite::Dav::Config]
+Class[Dmlite::Plugins::Hdfs::Config] -> Class[Dmlite::Gridftp]
+Class[Dmlite::Plugins::Hdfs::Config] -> Class[Dmlite::Xrootd]
+
 Class[Bdii::Install] -> Class[Lcgdm::Bdii::Dpm]
 Class[Lcgdm::Bdii::Dpm] -> Class[Bdii::Service]
 Class[fetchcrl::service] -> Class[Xrootd::Config]
@@ -130,33 +136,6 @@ class{"lcgdm":
   volist   => $volist,
 }
 
-#
-# RFIO configuration.
-#
-class{"lcgdm::rfio":
-  dpmhost => "${::fqdn}",
-}
-
-#
-# Entries in the shift.conf file, you can add in 'host' below the list of
-# machines that the DPM should trust (if any).
-#
-lcgdm::shift::trust_value{
-  "DPM TRUST":
-    component => "DPM",
-    host      => "${disk_nodes}";
-  "DPNS TRUST":
-    component => "DPNS",
-    host      => "${disk_nodes}";
-  "RFIO TRUST":
-    component => "RFIOD",
-    host      => "${disk_nodes}",
-    all       => true
-}
-lcgdm::shift::protocol{"PROTOCOLS":
-  component => "DPM",
-  proto     => "rfio gsiftp http https xroot"
-}
 
 #
 # VOMS configuration (same VOs as above).
@@ -200,9 +179,15 @@ class{"dmlite::head_hdfs":
 #
 # Frontends based on dmlite.
 #
-class{"dmlite::dav":}
+class{"dmlite::dav::install":}
+class{"dmlite::dav::config":
+  enable_hdfs => true
+}
+class{"dmlite::dav::service":}
+
 class{"dmlite::gridftp":
-  dpmhost => "${::fqdn}"
+  dpmhost => "${::fqdn}",
+  enable_hdfs => true
 }
 
 
@@ -221,7 +206,8 @@ class{"dmlite::xrootd":
   nodetype              => [ 'head','disk' ],
   domain                => "${localdomain}",
   dpm_xrootd_debug      => $debug,
-  dpm_xrootd_sharedkey  => "${xrootd_sharedkey}"
+  dpm_xrootd_sharedkey  => "${xrootd_sharedkey}",
+  enable_hdfs           => true,
 }
 
 # BDII
@@ -236,6 +222,7 @@ class{"lcgdm::bdii::dpm":
 #memcache configuration
 Class[Dmlite::Plugins::Memcache::Install] ~> Class[Dmlite::Dav::Service]
 Class[Dmlite::Plugins::Memcache::Install] ~> Class[Dmlite::Gridftp]
+Class[Dmlite::Plugins::Memcache::Install] ~> Class[Xrootd::Service]
 
 Class[Lcgdm::Base::Config]
 ->

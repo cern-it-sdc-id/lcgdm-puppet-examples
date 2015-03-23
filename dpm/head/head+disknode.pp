@@ -8,7 +8,7 @@
 #
 # The standard variables are collected here:
 #
-$token_password = "TOKEN_PASSWORD"
+$token_password = "change-this"
 $mysql_root_pass = "PASS"
 $db_user = "dpmmgr"
 $db_pass = "MYSQLPASS"
