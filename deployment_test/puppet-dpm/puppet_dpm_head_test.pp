@@ -1,7 +1,6 @@
 class{"dpm::headnode":
-   disk_nodes => [ "dpmdisk01.cern.ch", "dpmdisk02.cern.ch" ]
+   disk_nodes => [ "dpmdisk01.cern.ch", "dpmdisk02.cern.ch" ],
    localdomain => "cern.ch",
-   db_user => "dpmmgr"	
    db_pass => "MYSQLPASS",
    mysql_root_pass => "PASS",
    token_password => "TOKEN_PASSWORD",
