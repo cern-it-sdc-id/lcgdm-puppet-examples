@@ -8,16 +8,32 @@
 #
 # The standard variables are collected here:
 #
+# the dmlite token password, it has the same value as the YAIM var DMLITE_TOKEN_PASSWORD
 $token_password = "TOKEN_PASSWORD"
+#The Mysql root pass ( if Mysql is installed locally), it has the same value as the  YAIM var MYSQL_PASSWORD
 $mysql_root_pass = "PASS"
+#the DPM DB user, it has the same value as the YAIM var DPM_DB_USER
 $db_user = "dpmmgr"
+#the DPM DB user password, it has the same value as the YAIM var DPM_DB_PASSWORD
 $db_pass = "MYSQLPASS"
+#the DPM DB host, it has the same value as the YAIM var DPM_DB_HOST
+$db_host = "localhost"
+# the DPM host domain, it has the same value as the YAIM var MY_DOMAIN
 $localdomain = "cern.ch"
+# the list of VO tu support, it has the same value as the YAIM var VOS
 $volist = ["dteam", "atlas", "lhcb"]
-$disk_nodes = "${::fqdn} dpmdisk01.cern.ch dpmdisk02.cern.ch"
+# the list of disknodes to configure
+$disk_nodes = "dpmdisk01.cern.ch dpmdisk02.cern.ch"
+# the xrootd shared key, it  has the same value as the YAIM var DPM_XROOTD_SHAREDKEY
 $xrootd_sharedkey = "A32TO64CHARACTERKEYTESTTESTTESTTEST"
+#enable debug logs
 $debug = false
+#enable installation and configuration of the DB locally
 $local_db = true
+# the dpmmgr UID, it  has the same value as the YAIM var DPMMGR_UID
+$dpmmgr_uid = 151
+# the dpmmgr GID, it  has the same value as the YAIM var DPMMGR_GID
+$dpmmgr_gid = 151
 
 #
 # Set inter-module dependencies
@@ -130,10 +146,11 @@ class{"lcgdm":
   dbflavor => "mysql",
   dbuser   => "${db_user}",
   dbpass   => "${db_pass}",
-  dbhost   => "localhost",
+  dbhost   => "${db_host}",
   domain   => "${localdomain}",
   volist   => $volist,
-  uid      => 151,
+  uid      => $dpmmgr_uid,
+  gid      => $dpmmgr_gid
 }
 
 #
