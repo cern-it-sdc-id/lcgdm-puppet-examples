@@ -104,7 +104,7 @@ file {
 #
 class{"lcgdm::base":
   uid      => $dpmmgr_uid,
-  gid      => $dpmmgr_gid.
+  gid      => $dpmmgr_gid,
 }
 
 class{"lcgdm::ns::client":
