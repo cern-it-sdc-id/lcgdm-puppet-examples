@@ -150,7 +150,7 @@ class{"lcgdm":
   domain   => "${localdomain}",
   volist   => $volist,
   uid      => $dpmmgr_uid,
-  gid      => $dpmmgr_gid.
+  gid      => $dpmmgr_gid,
 }
 
 #
