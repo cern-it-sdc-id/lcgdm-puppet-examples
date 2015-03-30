@@ -6,18 +6,32 @@
 #
 
 #
+#
 # The standard variables are collected here:
 #
-$token_password = "change-this"
+# the dmlite token password, it has the same value as the YAIM var DMLITE_TOKEN_PASSWORD
+$token_password = "TOKEN_PASSWORD"
+#The Mysql root pass ( if Mysql is installed locally), it has the same value as the  YAIM var MYSQL_PASSWORD
 $mysql_root_pass = "PASS"
+#the DPM DB user, it has the same value as the YAIM var DPM_DB_USER
 $db_user = "dpmmgr"
+#the DPM DB user password, it has the same value as the YAIM var DPM_DB_PASSWORD
 $db_pass = "MYSQLPASS"
+#the DPM DB host, it has the same value as the YAIM var DPM_DB_HOST
+$db_host = "localhost"
+# the DPM host domain, it has the same value as the YAIM var MY_DOMAIN
 $localdomain = "cern.ch"
+# the list of VO tu support, it has the same value as the YAIM var VOS
 $volist = ["dteam", "atlas"]
+# the list of disknodes to configure
 $disk_nodes = "${::fqdn}"
+# the xrootd shared key, it  has the same value as the YAIM var DPM_XROOTD_SHAREDKEY
 $xrootd_sharedkey = "A32TO64CHARACTERKEYTESTTESTTESTTEST"
+#enable debug logs
 $debug = false
+#enable installation and configuration of the DB locally
 $local_db = true
+
 
 #
 # Set inter-module dependencies
@@ -130,7 +144,7 @@ class{"lcgdm":
   dbflavor => "mysql",
   dbuser   => "${db_user}",
   dbpass   => "${db_pass}",
-  dbhost   => "localhost",
+  dbhost   => "${db_host}",
   domain   => "${localdomain}",
   volist   => $volist,
 }
@@ -145,36 +159,41 @@ class{"lcgdm::rfio":
 
 
 #
-# You can define your pools here (example is commented).
+# You can define your pools here 
 #
-Class[Lcgdm::Dpm::Service] -> Lcgdm::Dpm::Pool <| |>
-lcgdm::dpm::pool{"mypool":
-  def_filesize => "100M"
-}
+#the "mypool" value has the same value as the YAIM  var DPMPOOL
+#the value of def_filesize has the same value of the YAIM var DPMFSIZE
+#
+#Class[Lcgdm::Dpm::Service] -> Lcgdm::Dpm::Pool <| |>
+#lcgdm::dpm::pool{"mypool":
+#  def_filesize => "100M"
+#}
 #
 #
-# You can define your filesystems here (example is commented).
+# You can define your filesystems here.
 #
-Class[Lcgdm::Base::Config] ->
-file {
-   "/srv/dpm":
-   ensure => directory,
-   owner => "dpmmgr",
-   group => "dpmmgr",   
-   mode =>  0775;
-   "/srv/dpm/01":
-   ensure => directory,
-   owner => "dpmmgr",
-   group => "dpmmgr",
-   seltype => "httpd_sys_content_t",
-   mode => 0775;
-}
-->
-lcgdm::dpm::filesystem {"${fqdn}-myfsname":
-  pool   => "mypool",
-  server => "${fqdn}",
-  fs     => "/srv/dpm"
-}
+# the configuration is similar to what is defined in the YAIM var DPM_FILESYSTEMS
+#
+#Class[Lcgdm::Base::Config] ->
+#file {
+#   "/srv/dpm":
+#   ensure => directory,
+#   owner => "dpmmgr",
+#   group => "dpmmgr",   
+#   mode =>  0775;
+#   "/srv/dpm/01":
+#   ensure => directory,
+#   owner => "dpmmgr",
+#   group => "dpmmgr",
+#   seltype => "httpd_sys_content_t",
+#   mode => 0775;
+#}
+#->
+#lcgdm::dpm::filesystem {"${fqdn}-myfsname":
+#  pool   => "mypool",
+#  server => "${fqdn}",
+#  fs     => "/srv/dpm"
+#}
 
 #
 # Entries in the shift.conf file, you can add in 'host' below the list of
@@ -200,11 +219,19 @@ lcgdm::shift::protocol{"PROTOCOLS":
 #
 # VOMS configuration (same VOs as above).
 #
+# It replaces the YAIM conf
+# VO_<vo_name>_VOMSES="'vo_name voms_server_hostname port voms_server_host_cert_dn vo_name' ['...']"
+# VO_<vo_name>_VOMS_CA_DN="'voms_server_ca_dn' ['...']"
+
+#
 class{"voms::atlas":}
 class{"voms::dteam":}
 
 #
 # Gridmapfile configuration.
+#
+# it corresponds to the YAIM conf
+# VO_<vo_name>_VOMS_SERVERS="'vomss://<host-name>:8443/voms/<vo-name>?/<vo-name>' ['...']"
 #
 $groupmap = {
   "vomss://voms.hellasgrid.gr:8443/voms/dteam?/dteam"                 => "dteam",
@@ -250,6 +277,8 @@ class{"dmlite::gridftp":
 
 #
 # The simplest xrootd configuration.
+#
+# the xrootd_user and xrootd_group vars are configured as in YAIM with the value of DPMMGR_USER
 #
 class{"xrootd::config":
   xrootd_user  => 'dpmmgr',

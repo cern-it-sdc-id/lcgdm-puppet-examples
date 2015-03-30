@@ -21,7 +21,7 @@ $db_host = "localhost"
 # the DPM host domain, it has the same value as the YAIM var MY_DOMAIN
 $localdomain = "cern.ch"
 # the list of VO tu support, it has the same value as the YAIM var VOS
-$volist = ["dteam", "atlas", "lhcb"]
+$volist = ["dteam", "atlas"]
 # the list of disknodes to configure
 $disk_nodes = "dpmdisk01.cern.ch dpmdisk02.cern.ch"
 # the xrootd shared key, it  has the same value as the YAIM var DPM_XROOTD_SHAREDKEY
@@ -150,7 +150,7 @@ class{"lcgdm":
   domain   => "${localdomain}",
   volist   => $volist,
   uid      => $dpmmgr_uid,
-  gid      => $dpmmgr_gid
+  gid      => $dpmmgr_gid.
 }
 
 #
@@ -163,6 +163,9 @@ class{"lcgdm::rfio":
 #
 # You can define your pools here (example is commented).
 #
+#the "mypool" value has the same value as the YAIM  var DPMPOOL
+#the value of def_filesize has the same value of the YAIM var DPMFSIZE
+#
 #Class[Lcgdm::Dpm::Service] -> Lcgdm::Dpm::Pool <| |>
 #lcgdm::dpm::pool{"mypool":
 #  def_filesize => "100M"
@@ -170,6 +173,8 @@ class{"lcgdm::rfio":
 #
 #
 # You can define your filesystems here (example is commented).
+#
+# the configuration is similar to what is defined in the YAIM var DPM_FILESYSTEMS
 #
 #lcgdm::dpm::filesystem {"${fqdn}-myfsname":
 #  pool   => "mypool",
@@ -201,11 +206,19 @@ lcgdm::shift::protocol{"PROTOCOLS":
 #
 # VOMS configuration (same VOs as above).
 #
+# It replaces the YAIM conf
+# VO_<vo_name>_VOMSES="'vo_name voms_server_hostname port voms_server_host_cert_dn vo_name' ['...']"
+# VO_<vo_name>_VOMS_CA_DN="'voms_server_ca_dn' ['...']"
+#
+#
 class{"voms::atlas":}
 class{"voms::dteam":}
 
 #
 # Gridmapfile configuration.
+#
+# it corresponds to the YAIM conf
+# VO_<vo_name>_VOMS_SERVERS="'vomss://<host-name>:8443/voms/<vo-name>?/<vo-name>' ['...']"
 #
 $groupmap = {
   "vomss://voms.hellasgrid.gr:8443/voms/dteam?/dteam"                 => "dteam",
@@ -246,6 +259,8 @@ class{"dmlite::gridftp":
 
 #
 # The simplest xrootd configuration.
+#
+# the xrootd_user and xrootd_group vars are configured as in YAIM with the value of DPMMGR_USER
 #
 class{"xrootd::config":
   xrootd_user  => 'dpmmgr',

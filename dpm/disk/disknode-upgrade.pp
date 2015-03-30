@@ -8,17 +8,28 @@
 #
 # The standard variables are collected here:
 #
+# the FQDN of the Headnode
 $headnode_fqdn = "HEADNODE"
+# the dmlite token password, it has the same value as the YAIM var DMLITE_TOKEN_PASSWORD
 $token_password = "TOKEN_PASSWORD"
-$mysql_root_pass = "PASS"
-$db_user = "dpmmgr"
-$db_pass = "MYSQLPASS"
+# the DPM host domain, it has the same value as the YAIM var MY_DOMAIN
 $localdomain = "cern.ch"
-$volist = ["dteam", "atlas", "lhcb"]
+# the list of VO tu support, it has the same value as the YAIM var VOS
+$volist = ["dteam", "atlas"]
+# the list of disknodes to configure
 $disk_nodes = "${::fqdn} dpmdisk01.cern.ch dpmdisk02.cern.ch"
+# the xrootd shared key, it  has the same value as the YAIM var DPM_XROOTD_SHAREDKEY
 $xrootd_sharedkey = "A32TO64CHARACTERKEYTESTTESTTESTTEST"
+#enable debug logs
 $debug = false
+# the dpmmgr UID, it  has the same value as the YAIM var DPMMGR_UID
+$dpmmgr_uid = 151
+# the dpmmgr GID, it  has the same value as the YAIM var DPMMGR_GID
+$dpmmgr_gid = 151
 
+#
+# Set inter-module dependencies
+#
 Class[Lcgdm::Base::Install] -> Class[Lcgdm::Rfio::Install]
 Class[Dmlite::Plugins::Adapter::Install] ~> Class[Dmlite::Dav::Service]
 Class[Dmlite::Plugins::Adapter::Install] ~> Class[Dmlite::Gridftp]
@@ -68,21 +79,10 @@ firewall{"050 allow cmsd":
   action => "accept"
 }
 
-firewall{"050 allow DPNS":
-  state  => "NEW",
-  proto  => "tcp",
-  dport  => "5010",
-  action => "accept"
-}
-firewall{"050 allow DPM":
-  state  => "NEW",
-  proto  => "tcp",
-  dport  => "5015",
-  action => "accept"
-}
 
 #
-# lcgdm mountpoints configuration
+# lcgdm mountpoints configuration example
+#
 Class[Lcgdm::Base::Config] ->
 file {
    "/srv/dpm":
@@ -100,10 +100,11 @@ file {
 
 
 #
-# lcgdm configuration, we explicitly set uid to 151 for the dpmmgr user cause it's the default used by YAIM
+# lcgdm configuration, we explicitly set uid and gid for the dpmmgr user 
 #
 class{"lcgdm::base":
-    uid => 151,
+  uid      => $dpmmgr_uid,
+  gid      => $dpmmgr_gid.
 }
 
 class{"lcgdm::ns::client":
@@ -142,11 +143,18 @@ lcgdm::shift::protocol{"PROTOCOLS":
 #
 # VOMS configuration (same VOs as above).
 #
+# It replaces the YAIM conf
+# VO_<vo_name>_VOMSES="'vo_name voms_server_hostname port voms_server_host_cert_dn vo_name' ['...']"
+# VO_<vo_name>_VOMS_CA_DN="'voms_server_ca_dn' ['...']"
+#
 class{"voms::atlas":}
 class{"voms::dteam":}
 
 #
 # Gridmapfile configuration.
+#
+# it corresponds to the YAIM conf
+# VO_<vo_name>_VOMS_SERVERS="'vomss://<host-name>:8443/voms/<vo-name>?/<vo-name>' ['...']"
 #
 $groupmap = {
   "vomss://voms.hellasgrid.gr:8443/voms/dteam?/dteam"                 => "dteam",
@@ -185,6 +193,8 @@ class{"dmlite::gridftp":
 #
 # The simplest xrootd configuration.
 #
+# the xrootd_user and xrootd_group vars are configured as in YAIM with the value of DPMMGR_USER
+#
 class{"xrootd::config":
   xrootd_user  => 'dpmmgr',
   xrootd_group => 'dpmmgr'
@@ -197,10 +207,6 @@ class{"dmlite::xrootd":
   dpm_xrootd_sharedkey  => "${xrootd_sharedkey}"
 }
 
-#
-# dmlite shell configuration.
-#
-#class{"dmlite::shell":}
 
 #limit conf
 
