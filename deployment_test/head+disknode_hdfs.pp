@@ -239,14 +239,13 @@ class{"dmlite::plugins::memcache":
 #
 # dmlite shell configuration to add pool
 #
-class{"dmlite::shell":}
-->
-  exec { "configurepool":
-    path        => '/bin:/sbin:/usr/bin:/usr/sbin',
-    environment => ['LD_LIBRARY_PATH=/usr/lib/jvm/java/jre/lib/amd64/server/'],
-    command     => "dmlite-shell -e 'pooladd  hdfs_pool hdfs';dmlite-shell -e 'poolmodify hdfs_pool hostname dpmhdfs02.cern.ch';dmlite-shell -e 'poolmodify hdfs_pool port 9000'; dmlite-shell -e 'poolmodify hdfs_pool username hdfs'; dmlite-shell -e 'poolmodify hdfs_pool mode rw'",
-    unless      => "dmlite-shell -e 'poolinfo rw'"
-  }
+exec { "configurepool":
+  path        => '/bin:/sbin:/usr/bin:/usr/sbin',
+  environment => ['LD_LIBRARY_PATH=/usr/lib/jvm/java/jre/lib/amd64/server/'],
+  command     => "dmlite-shell -e 'pooladd  hdfs_pool hdfs';dmlite-shell -e 'poolmodify hdfs_pool hostname dpmhdfs02.cern.ch';dmlite-shell -e 'poolmodify hdfs_pool port 9000'; dmlite-shell -e 'poolmodify hdfs_pool username hdfs'; dmlite-shell -e 'poolmodify hdfs_pool mode rw'",
+  unless      => "dmlite-shell -e 'poolinfo rw'",
+  require     => Class[Dmlite::Shell],
+}
 
 #limit conf
 
