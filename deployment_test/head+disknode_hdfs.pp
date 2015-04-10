@@ -239,6 +239,8 @@ class{"dmlite::plugins::memcache":
 #
 # dmlite shell configuration to add pool
 #
+class{"dmlite::shell":}
+
 exec { "configurepool":
   path        => '/bin:/sbin:/usr/bin:/usr/sbin',
   environment => ['LD_LIBRARY_PATH=/usr/lib/jvm/java/jre/lib/amd64/server/'],
