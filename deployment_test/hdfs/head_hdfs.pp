@@ -124,12 +124,12 @@ if ($local_db) {
     override_options  => $override_options
   }
 
-  mysql_grant { "${db_user}@${disk_nodes}/dpm_db.*":
-  	ensure     => 'present',
-  	options    => ['GRANT'],
-  	privileges => ['ALL'],
-  	table      => 'dpm_db.*',
-  	user       => '${db_user}@${disk_nodes}',
+   mysql_grant { "${db_user}@${disk_nodes}/dpm_db.*":
+        ensure     => 'present',
+        options    => ['GRANT'],
+        privileges => ['ALL'],
+        table      => 'dpm_db.*',
+        user       => "${db_user}@${disk_nodes}",
   }
 
   mysql_grant { "${db_user}@${disk_nodes}/cns_db.*":
@@ -137,7 +137,7 @@ if ($local_db) {
         options    => ['GRANT'],
         privileges => ['ALL'],
         table      => 'cns_db.*',
-        user       => '${db_user}@${disk_nodes}',
+        user       => "${db_user}@${disk_nodes}",
   }
 }
 
