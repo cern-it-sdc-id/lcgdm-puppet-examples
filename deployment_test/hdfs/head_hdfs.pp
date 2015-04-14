@@ -94,6 +94,12 @@ firewall{"050 allow DPM":
   action => "accept"
 }
 
+firewall{"050 allow mysql":
+  state  => "NEW",
+  proto  => "tcp",
+  dport  => "3306",
+  action => "accept"
+}
 #
 # MySQL server setup - disable if it is not local
 #
@@ -108,6 +114,7 @@ if ($local_db) {
     'query_cache_limit'  => '1MB',
     'innodb_flush_method' => 'O_DIRECT',
     'innodb_buffer_pool_size' => '1000000000',
+    'bind-address' => '0.0.0.0',
   }
  }
   
@@ -115,6 +122,22 @@ if ($local_db) {
     service_enabled => true,
     root_password   => "${mysql_root_pass}",
     override_options  => $override_options
+  }
+
+  mysql_grant { "${db_user}@${disk_nodes}/dpm_db.*":
+  	ensure     => 'present',
+  	options    => ['GRANT'],
+  	privileges => ['ALL'],
+  	table      => 'dpm_db.*',
+  	user       => '${db_user}@${disk_nodes}',
+  }
+
+  mysql_grant { "${db_user}@${disk_nodes}/cns_db.*":
+        ensure     => 'present',
+        options    => ['GRANT'],
+        privileges => ['ALL'],
+        table      => 'cns_db.*',
+        user       => '${db_user}@${disk_nodes}',
   }
 }
 
