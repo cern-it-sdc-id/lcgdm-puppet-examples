@@ -123,6 +123,12 @@ if ($local_db) {
     root_password   => "${mysql_root_pass}",
     override_options  => $override_options
   }
+ 
+   mysql_user { "${db_user}@${disk_nodes}":
+    ensure        => present,
+    password_hash => mysql_password($db_pass),
+    provider      => 'mysql',
+  }
 
    mysql_grant { "${db_user}@${disk_nodes}/dpm_db.*":
         ensure     => 'present',
@@ -204,7 +210,7 @@ class{"dmlite::dav::service":}
 
 class{"dmlite::gridftp":
   dpmhost => "${::fqdn}",
-  remote_nodes => $disk_nodes:2811,
+  remote_nodes => "${disk_nodes}:2811",
   enable_hdfs => true,
 }
 

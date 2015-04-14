@@ -10,7 +10,6 @@
 #
 $headnode_fqdn = "dpmhdfs-gridftp.cern.ch"
 $token_password = "change-this"
-$mysql_root_pass = "PASS"
 $db_user = "dpmmgr"
 $db_pass = "MYSQLPASS"
 $localdomain = "cern.ch"
@@ -138,6 +137,7 @@ class{"dmlite::disk_hdfs":
   token_password => "${token_password}",
   mysql_username => "${db_user}",
   mysql_password => "${db_pass}",
+  mysql_host     => "${headnode_fqdn}",
   hdfs_namenode  => 'dpmhdfs02.cern.ch',
   hdfs_port      => 9000,
   hdfs_user      => 'hdfs',
