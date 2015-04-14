@@ -8,7 +8,7 @@
 #
 # The standard variables are collected here:
 #
-headnode_fqdn = "dpmhdfs-gridftp.cern.ch"
+$headnode_fqdn = "dpmhdfs-gridftp.cern.ch"
 $token_password = "change-this"
 $mysql_root_pass = "PASS"
 $db_user = "dpmmgr"
@@ -156,7 +156,7 @@ class{"dmlite::dav::service":}
 class{"dmlite::gridftp":
   dpmhost => "${::fqdn}",
   enable_hdfs => true,
-  data_node => 1
+  data_note => 1
 }
 
 
