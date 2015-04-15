@@ -123,13 +123,19 @@ if ($local_db) {
     root_password   => "${mysql_root_pass}",
     override_options  => $override_options
   }
+ 
+   mysql_user { "${db_user}@${disk_nodes}":
+    ensure        => present,
+    password_hash => mysql_password($db_pass),
+    provider      => 'mysql',
+  }
 
-  mysql_grant { "${db_user}@${disk_nodes}/dpm_db.*":
-  	ensure     => 'present',
-  	options    => ['GRANT'],
-  	privileges => ['ALL'],
-  	table      => 'dpm_db.*',
-  	user       => '${db_user}@${disk_nodes}',
+   mysql_grant { "${db_user}@${disk_nodes}/dpm_db.*":
+        ensure     => 'present',
+        options    => ['GRANT'],
+        privileges => ['ALL'],
+        table      => 'dpm_db.*',
+        user       => "${db_user}@${disk_nodes}",
   }
 
   mysql_grant { "${db_user}@${disk_nodes}/cns_db.*":
@@ -137,7 +143,7 @@ if ($local_db) {
         options    => ['GRANT'],
         privileges => ['ALL'],
         table      => 'cns_db.*',
-        user       => '${db_user}@${disk_nodes}',
+        user       => "${db_user}@${disk_nodes}",
   }
 }
 
@@ -204,7 +210,7 @@ class{"dmlite::dav::service":}
 
 class{"dmlite::gridftp":
   dpmhost => "${::fqdn}",
-  remote_nodes => $disk_nodes:2811,
+  remote_nodes => "${disk_nodes}:2811",
   enable_hdfs => true,
 }
 
@@ -225,6 +231,7 @@ class{"dmlite::xrootd":
   domain                => "${localdomain}",
   dpm_xrootd_debug      => $debug,
   dpm_xrootd_sharedkey  => "${xrootd_sharedkey}",
+  enable_hdfs           => true,
 }
 
 # BDII
