@@ -14,7 +14,7 @@ $db_user = "dpmmgr"
 $db_pass = "MYSQLPASS"
 $localdomain = "cern.ch"
 $volist = ["dteam", "atlas"]
-$disk_nodes = "dpmhdfs-gateway.cern.ch"
+$disk_nodes = 'dpmhdfs-gateway.cern.ch dpnhdfs01.cern.ch'
 $xrootd_sharedkey = "A32TO64CHARACTERKEYTESTTESTTESTTEST"
 $debug = false
 $local_db = true
@@ -124,27 +124,50 @@ if ($local_db) {
     override_options  => $override_options
   }
  
-   mysql_user { "${db_user}@${disk_nodes}":
+   mysql_user { "${db_user}@dpmhdfs01.cern.ch":
     ensure        => present,
     password_hash => mysql_password($db_pass),
     provider      => 'mysql',
   }
 
-   mysql_grant { "${db_user}@${disk_nodes}/dpm_db.*":
+   mysql_grant { "${db_user}@dpmhdfs01.cern.ch/dpm_db.*":
         ensure     => 'present',
         options    => ['GRANT'],
         privileges => ['ALL'],
         table      => 'dpm_db.*',
-        user       => "${db_user}@${disk_nodes}",
+        user       => "${db_user}@dpmhdfs01.cern.ch",
   }
 
-  mysql_grant { "${db_user}@${disk_nodes}/cns_db.*":
+  mysql_grant { "${db_user}@dpmhdfs01.cern.ch/cns_db.*":
         ensure     => 'present',
         options    => ['GRANT'],
         privileges => ['ALL'],
         table      => 'cns_db.*',
-        user       => "${db_user}@${disk_nodes}",
+        user       => "${db_user}@dpmhdfs01.cern.ch",
   }
+  mysql_user { "${db_user}@dpmhdfs-gateway.cern.ch":
+    ensure        => present,
+    password_hash => mysql_password($db_pass),
+    provider      => 'mysql',
+  }
+
+  mysql_grant { "${db_user}@dpmhdfs-gateway.cern.ch/dpm_db.*":
+        ensure     => 'present',
+        options    => ['GRANT'],
+        privileges => ['ALL'],
+        table      => 'dpm_db.*',
+        user       => "${db_user}@dpmhdfs-gateway.cern.ch",
+  }
+
+  mysql_grant { "${db_user}@dpmhdfs-gateway.cern.ch/cns_db.*":
+        ensure     => 'present',
+        options    => ['GRANT'],
+        privileges => ['ALL'],
+        table      => 'cns_db.*',
+        user       => "${db_user}@dpmhdfs-gateway.cern.ch",
+  }
+
+
 }
 
 #
@@ -210,7 +233,7 @@ class{"dmlite::dav::service":}
 
 class{"dmlite::gridftp":
   dpmhost => "${::fqdn}",
-  remote_nodes => "${disk_nodes}:2811",
+  remote_nodes => "dpmhdfs-gateway.cern.ch:2811,dpmhdfs01.cern.ch:2811",
   enable_hdfs => true,
 }
 
@@ -244,21 +267,21 @@ class{"lcgdm::bdii::dpm":
 }
 
 #memcache configuration
-#Class[Dmlite::Plugins::Memcache::Install] ~> Class[Dmlite::Dav::Service]
-#Class[Dmlite::Plugins::Memcache::Install] ~> Class[Dmlite::Gridftp]
-#Class[Dmlite::Plugins::Memcache::Install] ~> Class[Xrootd::Service]
+Class[Dmlite::Plugins::Memcache::Install] ~> Class[Dmlite::Dav::Service]
+Class[Dmlite::Plugins::Memcache::Install] ~> Class[Dmlite::Gridftp]
+Class[Dmlite::Plugins::Memcache::Install] ~> Class[Xrootd::Service]
 
-#Class[Lcgdm::Base::Config]
-#->
-#class{"memcached":
-#   max_memory => 2000,
-#   listen_ip  => "127.0.0.1",
-#   }
-#->
-#class{"dmlite::plugins::memcache":
-#   expiration_limit => 600,
-#   posix            => 'on',
-#   }
+Class[Lcgdm::Base::Config]
+->
+class{"memcached":
+   max_memory => 2000,
+   listen_ip  => "127.0.0.1",
+   }
+->
+class{"dmlite::plugins::memcache":
+  expiration_limit => 600,
+  posix            => 'on',
+}
 
 #
 # dmlite shell configuration to add pool
