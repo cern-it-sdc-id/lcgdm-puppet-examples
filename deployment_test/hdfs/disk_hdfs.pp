@@ -156,7 +156,7 @@ class{"dmlite::dav::service":}
 class{"dmlite::gridftp":
   dpmhost => "${::fqdn}",
   enable_hdfs => true,
-  data_note => 1
+  data_node => 1
 }
 
 
