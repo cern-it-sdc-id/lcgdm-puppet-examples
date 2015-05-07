@@ -219,7 +219,7 @@ class{"dmlite::head_hdfs":
   hdfs_namenode  => 'dpmhdfs02.cern.ch',
   hdfs_port      => 9000,
   hdfs_user      => 'hdfs',
-  hdfs_gateway   => $disk_nodes,
+  hdfs_gateway   =>  join($disk_nodes, ','),
 }
 
 #
@@ -231,9 +231,12 @@ class{"dmlite::dav::config":
 }
 class{"dmlite::dav::service":}
 
+$remotes = suffix($disk_nodes, ':2811')
+$remote_nodes = join($remotes, ',')
+
 class{"dmlite::gridftp":
   dpmhost => "${::fqdn}",
-  remote_nodes => "dpmhdfs-gateway.cern.ch:2811,dpmhdfs01.cern.ch:2811",
+  remote_nodes => $remote_nodes,
   enable_hdfs => true,
 }
 
