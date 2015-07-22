@@ -327,7 +327,7 @@ class{"memcached":
    # the memory in MB assigned to memcached
    max_memory => 2000,
    # access from any host only, to be properly firewalled
-   listen_ip  => "0.0.0.0",
+   listen_ip  => "127.0.0.1",
    }
 ->
 class{"dmlite::plugins::memcache":
@@ -336,15 +336,6 @@ class{"dmlite::plugins::memcache":
    # use posix style when accessing folder content
    posix            => 'on',
    }
-
-#open memcache port on firewall
-firewall{"050 allow memcached default port tcp":
-  state  => "NEW",
-  proto  => "tcp",
-  dport  => "11211",
-  action => "accept"
-}
-
 #
 # dmlite shell configuration.
 #
