@@ -1,10 +1,11 @@
 #
-# This is an example configuration for a DPM Head Node.
+# This is an example configuration for a DPM Head + Disk Node  
 #
 # You can check the puppet modules 'lcgdm' and 'dmlite' for any additional options available.
 # !! Please replace the placeholders for usernames and passwords !!
 #
 
+#
 #
 # The standard variables are collected here:
 #
@@ -23,7 +24,7 @@ $localdomain = "cern.ch"
 # the list of VO tu support, it has the same value as the YAIM var VOS
 $volist = ["dteam", "atlas"]
 # the list of disknodes to configure
-$disk_nodes = ["dpmdisk01.cern.ch", "dpmdisk02.cern.ch"]
+$disk_nodes = ["${::fqdn}"]
 # the xrootd shared key, it  has the same value as the YAIM var DPM_XROOTD_SHAREDKEY
 $xrootd_sharedkey = "A32TO64CHARACTERKEYTESTTESTTESTTEST"
 #enable debug logs
@@ -36,24 +37,24 @@ $dpmmgr_uid = 151
 $dpmmgr_gid = 151
 
 
+
 #
 # Set inter-module dependencies
 #
 Class[Lcgdm::Dpm::Service] -> Class[Dmlite::Plugins::Adapter::Install]
+Class[Lcgdm::Ns::Config] -> Class[Dmlite::Srm::Service]
 Class[Dmlite::Head] -> Class[Dmlite::Plugins::Adapter::Install]
 Class[Dmlite::Plugins::Adapter::Install] ~> Class[Dmlite::Srm]
 Class[Dmlite::Plugins::Adapter::Install] ~> Class[Dmlite::Gridftp]
-Class[Dmlite::Plugins::Adapter::Install] ~> Class[Dmlite::Dav]
+Class[Dmlite::Plugins::Adapter::Install] -> Class[Dmlite::Dav]
 Dmlite::Plugins::Adapter::Create_config <| |> -> Class[Dmlite::Dav::Install]
 Class[Dmlite::Plugins::Mysql::Install] ~> Class[Dmlite::Srm]
 Class[Dmlite::Plugins::Mysql::Install] ~> Class[Dmlite::Gridftp]
-Class[Dmlite::Plugins::Mysql::Install] ~> Class[Dmlite::Dav]
-Class[fetchcrl::service]-> Class[Xrootd::Config]
+Class[Dmlite::Plugins::Mysql::Install] -> Class[Dmlite::Dav]
 Class[Bdii::Install] -> Class[Lcgdm::Bdii::Dpm]
 Class[Lcgdm::Bdii::Dpm] -> Class[Bdii::Service]
+Class[fetchcrl::service] -> Class[Xrootd::Config]
 Class[Mysql::Server] -> Class[Lcgdm::Ns::Service]
-
-
 #
 # The firewall configuration
 #
@@ -117,6 +118,12 @@ firewall{"050 allow DPM":
   dport  => "5015",
   action => "accept"
 }
+firewall{"050 allow DPM":
+  state  => "NEW",
+  proto  => "tcp",
+  dport  => "5015",
+  action => "accept"
+}
 firewall{"050 allow MySQL":
   state  => "NEW",
   proto  => "tcp",
@@ -129,7 +136,7 @@ firewall{"050 allow MySQL":
 #
 if ($local_db) {
 
-  #perforimance tunings options
+  #adding perf tunings
   $override_options = {
   'mysqld' => {
     'max_connections'    => '1000',
@@ -140,7 +147,7 @@ if ($local_db) {
     'bind-address' => '0.0.0.0',
   }
  }
-
+  
   class{"mysql::server":
     service_enabled => true,
     root_password   => "${mysql_root_pass}",
@@ -161,7 +168,7 @@ if ($local_db) {
         table      => 'cns_db.*',
         user       => "${db_user}@${disk_nodes}",
         provider   => 'mysql',
-        require    => [ Mysql_database['cns_db'], Mysql_user["${db_user}@${disk_nodes}"] ],  
+        require    => [ Mysql_database['cns_db'], Mysql_user["${db_user}@${disk_nodes}"] ],
   }
 
   firewall{"050 allow mysql":
@@ -170,13 +177,12 @@ if ($local_db) {
     dport  => "3316",
     action => "accept"
   }
-} 
+}
 else {
-  class{"mysql::server": 
+  class{"mysql::server":
     service_enabled => false,
   }
 }
-
 
 #
 # DPM and DPNS daemon configuration.
@@ -199,8 +205,10 @@ class{"lcgdm::rfio":
   dpmhost => "${::fqdn}",
 }
 
+
+
 #
-# You can define your pools here (example is commented).
+# You can define your pools here 
 #
 #the "mypool" value has the same value as the YAIM  var DPMPOOL
 #the value of def_filesize has the same value of the YAIM var DPMFSIZE
@@ -211,14 +219,29 @@ class{"lcgdm::rfio":
 #}
 #
 #
-# You can define your filesystems here (example is commented).
+# You can define your filesystems here.
 #
 # the configuration is similar to what is defined in the YAIM var DPM_FILESYSTEMS
-# 
+#
+#Class[Lcgdm::Base::Config] ->
+#file {
+#   "/srv/dpm":
+#   ensure => directory,
+#   owner => "dpmmgr",
+#   group => "dpmmgr",   
+#   mode =>  0775;
+#   "/srv/dpm/01":
+#   ensure => directory,
+#   owner => "dpmmgr",
+#   group => "dpmmgr",
+#   seltype => "httpd_sys_content_t",
+#   mode => 0775;
+#}
+#->
 #lcgdm::dpm::filesystem {"${fqdn}-myfsname":
 #  pool   => "mypool",
 #  server => "${fqdn}",
-#  fs     => "/fslocation"
+#  fs     => "/srv/dpm"
 #}
 
 #
@@ -248,6 +271,7 @@ lcgdm::shift::protocol{"PROTOCOLS":
 # It replaces the YAIM conf
 # VO_<vo_name>_VOMSES="'vo_name voms_server_hostname port voms_server_host_cert_dn vo_name' ['...']"
 # VO_<vo_name>_VOMS_CA_DN="'voms_server_ca_dn' ['...']"
+
 #
 class{"voms::atlas":}
 class{"voms::dteam":}
@@ -255,22 +279,26 @@ class{"voms::dteam":}
 #
 # Gridmapfile configuration.
 #
-# it correspond to the YAIM conf
+# it corresponds to the YAIM conf
 # VO_<vo_name>_VOMS_SERVERS="'vomss://<host-name>:8443/voms/<vo-name>?/<vo-name>' ['...']"
 #
-
 $groupmap = {
   "vomss://voms.hellasgrid.gr:8443/voms/dteam?/dteam"                 => "dteam",
   "vomss://voms2.cern.ch:8443/voms/atlas?/atlas"                      => "atlas",
   "vomss://lcg-voms2.cern.ch:8443/voms/atlas?/atlas"                  => "atlas"
 }
+
 lcgdm::mkgridmap::file {"lcgdm-mkgridmap":
   configfile   => "/etc/lcgdm-mkgridmap.conf",
   mapfile      => "/etc/lcgdm-mapfile",
   localmapfile => "/etc/lcgdm-mapfile-local",
   logfile      => "/var/log/lcgdm-mkgridmap.log",
   groupmap     => $groupmap,
-  localmap     => {"nobody" => "nogroup"}
+  localmap     => {"nobody" => "nogroup"},
+}
+
+exec{"/usr/sbin/edg-mkgridmap --conf=/etc/lcgdm-mkgridmap.conf --safe --output=/etc/lcgdm-mapfile":
+        require => Lcgdm::Mkgridmap::File["lcgdm-mkgridmap"]
 }
 
 #
@@ -280,7 +308,6 @@ class{"dmlite::head":
   token_password => "${token_password}",
   mysql_username => "${db_user}",
   mysql_password => "${db_pass}",
-  mysql_host     => "${db_host}",
 }
 
 #
@@ -307,11 +334,12 @@ class{"xrootd::config":
   xrootd_group => 'dpmmgr'
 }
 class{"dmlite::xrootd":
-  nodetype              => [ 'head' ],
+  nodetype              => [ 'head','disk' ],
   domain                => "${localdomain}",
   dpm_xrootd_debug      => $debug,
   dpm_xrootd_sharedkey  => "${xrootd_sharedkey}"
 }
+
 # BDII
 include('bdii')
    
@@ -329,18 +357,15 @@ Class[Dmlite::Plugins::Memcache::Install] ~> Class[Dmlite::Srm]
 Class[Lcgdm::Base::Config]
 ->
 class{"memcached":
-   # the memory in MB assigned to memcached
    max_memory => 2000,
-   # access from any host only, to be properly firewalled
    listen_ip  => "127.0.0.1",
    }
 ->
 class{"dmlite::plugins::memcache":
-   # cache entry expiration limit, in seconds
    expiration_limit => 600,
-   # use posix style when accessing folder content
    posix            => 'on',
    }
+
 #
 # dmlite shell configuration.
 #
@@ -358,4 +383,5 @@ $limits_config = {
     config    => $limits_config,
     use_hiera => false
   }
+
 
