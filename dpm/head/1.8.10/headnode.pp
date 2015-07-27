@@ -23,7 +23,7 @@ $localdomain = "cern.ch"
 # the list of VO tu support, it has the same value as the YAIM var VOS
 $volist = ["dteam", "atlas"]
 # the list of disknodes to configure
-$disk_nodes = "dpmdisk01.cern.ch dpmdisk02.cern.ch"
+$disk_nodes = ["dpmdisk01.cern.ch", "dpmdisk02.cern.ch"]
 # the xrootd shared key, it  has the same value as the YAIM var DPM_XROOTD_SHAREDKEY
 $xrootd_sharedkey = "A32TO64CHARACTERKEYTESTTESTTESTTEST"
 #enable debug logs
@@ -131,6 +131,7 @@ if ($local_db) {
     'query_cache_limit'  => '1MB',
     'innodb_flush_method' => 'O_DIRECT',
     'innodb_buffer_pool_size' => '1000000000',
+    'bind-address' => '0.0.0.0',
   }
  }
 
@@ -141,22 +142,20 @@ if ($local_db) {
   }
 
   #configure grants
-  $disks = split($disk_nodes, ' ')
-  
-  mysql_user { "${db_user}@${disks}":
+  mysql_user { "${db_user}@${disk_nodes}":
     ensure        => present,
     password_hash => "${db_pass}",
     provider      => 'mysql',
   }
 
-  mysql_grant { "${db_user}@${disks}/cns_db.*":
+  mysql_grant { "${db_user}@${disk_nodes}/cns_db.*":
         ensure     => 'present',
         options    => ['GRANT'],
         privileges => ['ALL'],
         table      => 'cns_db.*',
-        user       => "${db_user}@${disks}",
+        user       => "${db_user}@${disk_nodes}",
         provider   => 'mysql',
-        require    => [ Mysql_database['cns_db'], Mysql_user["${db_user}@${disks}"], ],  
+        require    => [ Mysql_database['cns_db'], Mysql_user["${db_user}@${disk_nodes}"] ],  
   }
 
   firewall{"050 allow mysql":
@@ -223,13 +222,13 @@ class{"lcgdm::rfio":
 lcgdm::shift::trust_value{
   "DPM TRUST":
     component => "DPM",
-    host      => "${disk_nodes}";
+    host      => join($disk_nodes,' ');
   "DPNS TRUST":
     component => "DPNS",
-    host      => "${disk_nodes}";
+    host      => join($disk_nodes,' ');
   "RFIO TRUST":
     component => "RFIOD",
-    host      => "${disk_nodes}",
+    host      => join($disk_nodes,' '),
     all       => true
 }
 lcgdm::shift::protocol{"PROTOCOLS":
