@@ -161,7 +161,7 @@ if ($local_db) {
   firewall{"050 allow mysql":
     state  => "NEW",
     proto  => "tcp",
-    dport  => "3316",
+    dport  => "3306",
     action => "accept"
   }
 } 
