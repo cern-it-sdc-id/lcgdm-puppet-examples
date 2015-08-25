@@ -210,7 +210,8 @@ include('bdii')
 # DPM GIP config
 class{"lcgdm::bdii::dpm":
      sitename  => "CERN-DPM-TESTBED",
-     vos => $volist
+     vos => $volist,
+     hdfs => true,
 }
 
 #memcache configuration
