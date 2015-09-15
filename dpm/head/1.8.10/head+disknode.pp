@@ -149,20 +149,9 @@ if ($local_db) {
   }
 
   #configure grants
-  mysql_user { "${db_user}@${disk_nodes}":
-    ensure        => present,
-    password_hash => "${db_pass}",
-    provider      => 'mysql',
-  }
-
-  mysql_grant { "${db_user}@${disk_nodes}/cns_db.*":
-        ensure     => 'present',
-        options    => ['GRANT'],
-        privileges => ['ALL'],
-        table      => 'cns_db.*',
-        user       => "${db_user}@${disk_nodes}",
-        provider   => 'mysql',
-        require    => [ Mysql_database['cns_db'], Mysql_user["${db_user}@${disk_nodes}"] ],
+  lcgdm::dpm::grants{ $disk_nodes:
+    user => $db_user,
+    pass => $dp_pass,
   }
 
   firewall{"050 allow mysql":
