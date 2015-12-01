@@ -189,13 +189,13 @@ class{"lcgdm::rfio":
 lcgdm::shift::trust_value{
   "DPM TRUST":
     component => "DPM",
-    host      => "${disk_nodes}";
+    host      => "${disk_nodes} ${::fqdn}";
   "DPNS TRUST":
     component => "DPNS",
-    host      => "${disk_nodes}";
+    host      => "${disk_nodes} ${::fqdn}";
   "RFIO TRUST":
     component => "RFIOD",
-    host      => "${disk_nodes}",
+    host      => "${disk_nodes} ${::fqdn}",
     all       => true
 }
 lcgdm::shift::protocol{"PROTOCOLS":

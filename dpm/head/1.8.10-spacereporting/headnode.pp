@@ -23,7 +23,7 @@ $localdomain = "cern.ch"
 # the list of VO tu support, it has the same value as the YAIM var VOS
 $volist = ["dteam", "atlas"]
 # the list of disknodes to configure
-$disk_nodes = ["dpmdisk01.cern.ch", "dpmdisk02.cern.ch"]
+$disk_nodes = [${::fqdn}, "dpmdisk01.cern.ch", "dpmdisk02.cern.ch"]
 # the xrootd shared key, it  has the same value as the YAIM var DPM_XROOTD_SHAREDKEY
 $xrootd_sharedkey = "A32TO64CHARACTERKEYTESTTESTTESTTEST"
 #enable debug logs
