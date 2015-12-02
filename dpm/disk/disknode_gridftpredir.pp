@@ -176,7 +176,7 @@ class{"dmlite::disk":
 class{"dmlite::dav":}
 class{"dmlite::gridftp":
   dpmhost => "${headnode_fqdn}",
-  data_note => 1,
+  data_node => 1,
 }
 
 # The XrootD configuration is a bit more complicated and
