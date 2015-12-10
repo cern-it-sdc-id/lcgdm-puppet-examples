@@ -151,7 +151,7 @@ if ($local_db) {
   #configure grants
   lcgdm::dpm::grants{ $disk_nodes:
     user => $db_user,
-    pass => $dp_pass,
+    pass => $db_pass,
   }
 
   firewall{"050 allow mysql":
