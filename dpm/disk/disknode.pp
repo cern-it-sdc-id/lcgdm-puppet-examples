@@ -23,6 +23,10 @@ $disk_nodes = "${::fqdn} dpmdisk01.cern.ch dpmdisk02.cern.ch"
 $xrootd_sharedkey = "A32TO64CHARACTERKEYTESTTESTTESTTEST"
 #enable debug logs
 $debug = false
+# the dpmmgr UID, it  has the same value as the YAIM var DPMMGR_UID
+$dpmmgr_uid = 151
+# the dpmmgr GID, it  has the same value as the YAIM var DPMMGR_GID
+$dpmmgr_gid = 151
 
 #
 # Set inter-module dependencies
@@ -94,10 +98,12 @@ file {
 }
 
 #
-# lcgdm configuration.
+# lcgdm configuration, we explicitly set uid and gid for the dpmmgr user 
 #
-class{"lcgdm::base::config":}
-class{"lcgdm::base::install":}
+class{"lcgdm::base":
+  uid      => $dpmmgr_uid,
+  gid      => $dpmmgr_gid,
+}
 
 class{"lcgdm::ns::client":
   flavor  => "dpns",
