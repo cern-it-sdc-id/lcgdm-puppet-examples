@@ -31,6 +31,10 @@ $xrootd_sharedkey = "A32TO64CHARACTERKEYTESTTESTTESTTEST"
 $debug = false
 #enable installation and configuration of the DB locally
 $local_db = true
+# the dpmmgr UID, it  has the same value as the YAIM var DPMMGR_UID
+$dpmmgr_uid = 151
+# the dpmmgr GID, it  has the same value as the YAIM var DPMMGR_GID
+$dpmmgr_gid = 151
 
 
 #
@@ -147,6 +151,8 @@ class{"lcgdm":
   dbhost   => "${db_host}",
   domain   => "${localdomain}",
   volist   => $volist,
+  uid      => $dpmmgr_uid,
+  gid      => $dpmmgr_gid,
 }
 
 #
