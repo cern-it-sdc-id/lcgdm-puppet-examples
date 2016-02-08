@@ -168,13 +168,13 @@ file {
    ensure => directory,
    owner => "dpmmgr",
    group => "dpmmgr",   
-   mode =>  0775;
+   mode =>  '0775';
    "/srv/dpm/01":
    ensure => directory,
    owner => "dpmmgr",
    group => "dpmmgr",
    seltype => "httpd_sys_content_t",
-   mode => 0775;
+   mode => '0775';
 }
 ->
 lcgdm::dpm::filesystem {"${fqdn}-myfsname":
