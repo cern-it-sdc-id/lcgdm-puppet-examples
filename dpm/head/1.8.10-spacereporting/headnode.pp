@@ -39,19 +39,18 @@ $dpmmgr_gid = 151
 #
 # Set inter-module dependencies
 #
-Class[Lcgdm::Dpm::Service] -> Class[Dmlite::Plugins::Adapter::Install]
-Class[Dmlite::Head] -> Class[Dmlite::Plugins::Adapter::Install]
-Class[Dmlite::Plugins::Adapter::Install] ~> Class[Dmlite::Srm]
-Class[Dmlite::Plugins::Adapter::Install] ~> Class[Dmlite::Gridftp]
-Class[Dmlite::Plugins::Adapter::Install] ~> Class[Dmlite::Dav]
-Dmlite::Plugins::Adapter::Create_config <| |> -> Class[Dmlite::Dav::Install]
-Class[Dmlite::Plugins::Mysql::Install] ~> Class[Dmlite::Srm]
-Class[Dmlite::Plugins::Mysql::Install] ~> Class[Dmlite::Gridftp]
-Class[Dmlite::Plugins::Mysql::Install] ~> Class[Dmlite::Dav]
-Class[fetchcrl::service]-> Class[Xrootd::Config]
-Class[Bdii::Install] -> Class[Lcgdm::Bdii::Dpm]
-Class[Lcgdm::Bdii::Dpm] -> Class[Bdii::Service]
-Class[Mysql::Server] -> Class[Lcgdm::Ns::Service]
+Class[lcgdm::dpm::service] -> Class[dmlite::plugins::adapter::install]
+Class[dmlite::head] -> Class[dmlite::plugins::adapter::install]
+Class[dmlite::plugins::adapter::install] ~> Class[dmlite::srm]
+Class[dmlite::plugins::adapter::install] ~> Class[dmlite::gridftp]
+Class[dmlite::plugins::adapter::install] ~> Class[dmlite::dav]
+Dmlite::Plugins::Adapter::Create_config <| |> -> Class[dmlite::dav::install]
+Class[dmlite::plugins::mysql::install] ~> Class[dmlite::srm]
+Class[dmlite::plugins::mysql::install] ~> Class[dmlite::gridftp]
+Class[dmlite::plugins::mysql::install] ~> Class[dmlite::dav]
+Class[fetchcrl::service]-> Class[xrootd::config]
+Class[bdii::install] -> Class[lcgdm::bdii::dpm]
+Class[lcgdm::bdii::dpm] -> Class[bdii::service]
 
 
 #
@@ -122,7 +121,7 @@ firewall{"050 allow DPM":
 # MySQL server setup - disable if it is not local
 #
 if ($local_db) {
-
+  Class[mysql::server] -> Class[lcgdm::ns::service]
   #perforimance tunings options
   $override_options = {
   'mysqld' => {
@@ -186,7 +185,7 @@ class{"lcgdm::rfio":
 #the "mypool" value has the same value as the YAIM  var DPMPOOL
 #the value of def_filesize has the same value of the YAIM var DPMFSIZE
 #
-#Class[Lcgdm::Dpm::Service] -> Lcgdm::Dpm::Pool <| |>
+#Class[lcgdm::dpm::service] -> Lcgdm::Dpm::Pool <| |>
 #lcgdm::dpm::pool{"mypool":
 #  def_filesize => "100M"
 #}
@@ -304,11 +303,11 @@ class{"lcgdm::bdii::dpm":
 }
 
 #memcache configuration
-Class[Dmlite::Plugins::Memcache::Install] ~> Class[Dmlite::Dav::Service]
-Class[Dmlite::Plugins::Memcache::Install] ~> Class[Dmlite::Gridftp]
-Class[Dmlite::Plugins::Memcache::Install] ~> Class[Dmlite::Srm]
+Class[dmlite::plugins::memcache::install] ~> Class[dmlite::dav::service]
+Class[dmlite::plugins::memcache::install] ~> Class[dmlite::gridftp]
+Class[dmlite::plugins::memcache::install] ~> Class[dmlite::srm]
 
-Class[Lcgdm::Base::Config]
+Class[lcgdm::base::config]
 ->
 class{"memcached":
    # the memory in MB assigned to memcached

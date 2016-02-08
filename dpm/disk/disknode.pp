@@ -31,9 +31,9 @@ $dpmmgr_gid = 151
 #
 # Set inter-module dependencies
 #
-Class[Lcgdm::Base::Install] -> Class[Lcgdm::Rfio::Install]
-Class[Dmlite::Plugins::Adapter::Install] ~> Class[Dmlite::Dav::Service]
-Class[Dmlite::Plugins::Adapter::Install] ~> Class[Dmlite::Gridftp]
+Class[lcgdm::base::install] -> Class[lcgdm::rfio::install]
+Class[dmlite::plugins::adapter::install] ~> Class[dmlite::dav::service]
+Class[dmlite::plugins::adapter::install] ~> Class[dmlite::gridftp]
 
 #
 # The firewall configuration
@@ -82,7 +82,7 @@ firewall{"050 allow cmsd":
 
 #
 # lcgdm mountpoints configuration
-Class[Lcgdm::Base::Config] ->
+Class[lcgdm::base::config] ->
 file {
    "/srv/dpm":
    ensure => directory,

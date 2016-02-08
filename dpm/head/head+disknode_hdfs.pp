@@ -22,20 +22,20 @@ $local_db = true
 #
 # Set inter-module dependencies
 #
-Class[Dmlite::Plugins::Hdfs::Install] -> Class[Dmlite::Gridftp]
-Class[Dmlite::Plugins::Hdfs::Install] -> Class[Dmlite::Dav::Config]
-Class[Dmlite::Plugins::Hdfs::Install] -> Class[Xrootd::Config]
-Class[Dmlite::Plugins::Mysql::Install] -> Class[Dmlite::Gridftp]
-Class[Dmlite::Plugins::Mysql::Install] -> Class[Dmlite::Dav::Config]
-Class[Dmlite::Plugins::Mysql::Install] ->  Class[Xrootd::Config]
+Class[dmlite::plugins::hdfs::install] -> Class[dmlite::gridftp]
+Class[dmlite::plugins::hdfs::install] -> Class[dmlite::dav::config]
+Class[dmlite::plugins::hdfs::install] -> Class[xrootd::config]
+Class[dmlite::plugins::mysql::install] -> Class[dmlite::gridftp]
+Class[dmlite::plugins::mysql::install] -> Class[dmlite::dav::config]
+Class[dmlite::plugins::mysql::install] ->  Class[xrootd::config]
 
-Class[Dmlite::Plugins::Hdfs::Config]  -> Class[Dmlite::Dav::Config]
-Class[Dmlite::Plugins::Hdfs::Config] -> Class[Dmlite::Gridftp]
-Class[Dmlite::Plugins::Hdfs::Config] -> Class[Dmlite::Xrootd]
+Class[dmlite::plugins::hdfs::config]  -> Class[dmlite::dav::config]
+Class[dmlite::plugins::hdfs::config] -> Class[dmlite::gridftp]
+Class[dmlite::plugins::hdfs::config] -> Class[dmlite::xrootd]
 
-Class[Bdii::Install] -> Class[Lcgdm::Bdii::Dpm]
-Class[Lcgdm::Bdii::Dpm] -> Class[Bdii::Service]
-Class[fetchcrl::service] -> Class[Xrootd::Config]
+Class[bdii::install] -> Class[lcgdm::bdii::dpm]
+Class[lcgdm::bdii::dpm] -> Class[bdii::service]
+Class[fetchcrl::service] -> Class[xrootd::config]
 #
 # The firewall configuration
 #
@@ -104,7 +104,7 @@ firewall{"050 allow DPM":
 # MySQL server setup - disable if it is not local
 #
 if ($local_db) {
-  Class[Mysql::Server] -> Class[Lcgdm::Ns::Service]
+  Class[mysql::server] -> Class[lcgdm::ns::service]
 
   #adding perf tunings
   $override_options = {
@@ -220,11 +220,11 @@ class{"lcgdm::bdii::dpm":
 }
 
 #memcache configuration
-Class[Dmlite::Plugins::Memcache::Install] ~> Class[Dmlite::Dav::Service]
-Class[Dmlite::Plugins::Memcache::Install] ~> Class[Dmlite::Gridftp]
-Class[Dmlite::Plugins::Memcache::Install] ~> Class[Xrootd::Service]
+Class[dmlite::plugins::memcache::install] ~> Class[dmlite::dav::service]
+Class[dmlite::plugins::memcache::install] ~> Class[dmlite::gridftp]
+Class[dmlite::plugins::memcache::install] ~> Class[xrootd::service]
 
-Class[Lcgdm::Base::Config]
+Class[lcgdm::base::config]
 ->
 class{"memcached":
    max_memory => 2000,
