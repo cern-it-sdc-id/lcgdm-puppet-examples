@@ -22,23 +22,23 @@ $local_db = true
 #
 # Set inter-module dependencies
 #
-Class[Lcgdm::Dpm::Service] -> Class[Dmlite::Plugins::Adapter::Install]
-Class[Lcgdm::Ns::Config] -> Class[Dmlite::Srm::Service]
-Class[Dmlite::Head] -> Class[Dmlite::Plugins::Adapter::Install]
-Class[Dmlite::Plugins::Adapter::Install] ~> Class[Dmlite::Srm]
-Class[Dmlite::Plugins::Adapter::Install] ~> Class[Dmlite::Gridftp]
-Class[Dmlite::Plugins::Adapter::Install] -> Class[Dmlite::Dav]
-Dmlite::Plugins::Adapter::Create_config <| |> -> Class[Dmlite::Dav::Install]
-Class[Dmlite::Plugins::Mysql::Install] ~> Class[Dmlite::Srm]
-Class[Dmlite::Plugins::Mysql::Install] ~> Class[Dmlite::Gridftp]
-Class[Dmlite::Plugins::Mysql::Install] -> Class[Dmlite::Dav]
-Class[Bdii::Install] -> Class[Lcgdm::Bdii::Dpm]
-Class[Lcgdm::Bdii::Dpm] -> Class[Bdii::Service]
-Class[fetchcrl::service] -> Class[Xrootd::Config]
+Class[lcgdm::dpm::service] -> Class[dmlite::plugins::adapter::install]
+Class[lcgdm::ns::config] -> Class[dmlite::srm::service]
+Class[dmlite::head] -> Class[dmlite::plugins::adapter::install]
+Class[dmlite::plugins::adapter::install] ~> Class[dmlite::srm]
+Class[dmlite::plugins::adapter::install] ~> Class[dmlite::gridftp]
+Class[dmlite::plugins::adapter::install] -> Class[dmlite::dav]
+Dmlite::Plugins::Adapter::Create_config <| |> -> Class[dmlite::dav::install]
+Class[dmlite::plugins::mysql::install] ~> Class[dmlite::srm]
+Class[dmlite::plugins::mysql::install] ~> Class[dmlite::gridftp]
+Class[dmlite::plugins::mysql::install] -> Class[dmlite::dav]
+Class[bdii::install] -> Class[lcgdm::bdii::dpm]
+Class[lcgdm::bdii::dpm] -> Class[bdii::service]
+Class[fetchcrl::service] -> Class[xrootd::config]
 #memcache deps
-Class[Dmlite::Plugins::Memcache::Install] ~> Class[Dmlite::Dav::Service]    
-Class[Dmlite::Plugins::Memcache::Install] ~> Class[Dmlite::Gridftp]
-Class[Dmlite::Plugins::Memcache::Install] ~> Class[Dmlite::Srm]
+Class[dmlite::plugins::memcache::install] ~> Class[dmlite::dav::service]    
+Class[dmlite::plugins::memcache::install] ~> Class[dmlite::gridftp]
+Class[dmlite::plugins::memcache::install] ~> Class[dmlite::srm]
 
 #
 # The firewall configuration
@@ -108,7 +108,7 @@ firewall{"050 allow DPM":
 # MySQL server setup - disable if it is not local
 #
 if ($local_db) {
-  Class[Mysql::Server] -> Class[Lcgdm::Ns::Service]
+  Class[mysql::server] -> Class[lcgdm::ns::service]
 	
   #adding perf tunings
   $override_options = {
@@ -154,7 +154,7 @@ class{"lcgdm::rfio":
 #
 # You can define your pools here (example is commented).
 #
-Class[Lcgdm::Dpm::Service] -> Lcgdm::Dpm::Pool <| |>
+Class[lcgdm::dpm::service] -> Lcgdm::Dpm::Pool <| |>
 lcgdm::dpm::pool{"mypool":
   def_filesize => "100M"
 }
@@ -162,7 +162,7 @@ lcgdm::dpm::pool{"mypool":
 #
 # You can define your filesystems here (example is commented).
 #
-Class[Lcgdm::Base::Config] ->
+Class[lcgdm::base::config] ->
 file {
    "/srv/dpm":
    ensure => directory,
@@ -285,7 +285,7 @@ class{"lcgdm::bdii::dpm":
 #
 class{"dmlite::shell":}
 
-Class[Lcgdm::Base::Config] ->
+Class[lcgdm::base::config] ->
 class{"memcached":
     max_memory => 512,
 }
