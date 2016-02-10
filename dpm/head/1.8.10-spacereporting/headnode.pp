@@ -136,7 +136,9 @@ if ($local_db) {
   class{"mysql::server":
     service_enabled => true,
     root_password   => "${mysql_root_pass}",
-    override_options  => $override_options
+    override_options  => $override_options,
+    #this is set to false in the case of an existing DPM DB, for new installations it has to be set to true.
+    create_root_user => false,
   }
 
   lcgdm::dpm::grants{ $disk_nodes:
