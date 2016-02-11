@@ -113,6 +113,7 @@ if ($local_db) {
     'query_cache_limit'  => '1MB',
     'innodb_flush_method' => 'O_DIRECT',
     'innodb_buffer_pool_size' => '1000000000',
+    'bind-address' => '0.0.0.0',
   }
  }
 
