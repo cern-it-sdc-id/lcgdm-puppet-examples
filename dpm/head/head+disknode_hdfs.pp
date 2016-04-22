@@ -173,6 +173,7 @@ class{"dmlite::head_hdfs":
   token_password => "${token_password}",
   mysql_username => "${db_user}",
   mysql_password => "${db_pass}",
+  mysql_host     => "${db_host}",
   hdfs_namenode  => 'dpmhdfs02.cern.ch',
   hdfs_port      => 9000,
   hdfs_user      => 'hdfs',
