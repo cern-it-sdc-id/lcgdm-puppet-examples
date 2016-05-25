@@ -35,6 +35,8 @@ $local_db = true
 $dpmmgr_uid = 151
 # the dpmmgr GID, it  has the same value as the YAIM var DPMMGR_GID
 $dpmmgr_gid = 151
+# the site name to be published to the BII
+$site_name = "YOUR SITE NAME"
 
 
 
@@ -326,7 +328,7 @@ include('bdii')
    
 # DPM GIP config
 class{"lcgdm::bdii::dpm":
-     sitename  => "CERN-DPM-TESTBED",
+     sitename  => "${site_name}",
      vos => $volist
 }
 
