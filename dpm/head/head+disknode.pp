@@ -141,7 +141,7 @@ if ($local_db) {
     service_enabled => true,
     root_password   => "${mysql_root_pass}",
     override_options  => $override_options,
-    #this is set to false in the case of an existing DPM DB, for new installations it has to be set to trueq
+    #this is set to false in the case of an existing DPM DB or if the root user has been already created manually, for new installations it has to be set to trueq
     create_root_user => false,
   }
 }
