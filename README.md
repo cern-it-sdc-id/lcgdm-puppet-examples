@@ -15,7 +15,6 @@ and the following third party modules:
 * puppet module install puppetlabs-mysql
 * puppet module install puppetlabs-firewall
 * puppet module install saz-memcached
-* puppet module install erwbgy-limits
 
 The Documentation details are availale at:
 
