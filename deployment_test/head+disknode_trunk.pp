@@ -240,6 +240,8 @@ class{"dmlite::head":
   token_password => "${token_password}",
   mysql_username => "${db_user}",
   mysql_password => "${db_pass}",
+  enable_dome    => true,
+  enable_disknode => true
 }
 
 #
