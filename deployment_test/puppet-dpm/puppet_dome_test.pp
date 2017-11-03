@@ -6,7 +6,7 @@ class{"dpm::head_disknode":
    localdomain => "cern.ch",
    db_pass => "MYSQLPASS",
    mysql_root_pass => "mysqlroot",
-   token_password => "TOKEN_PASSWORD",
+   token_password => "A32TO1024CHARAfdfCTERKEYTESTTESTTESTTESTTESTETEERETTETETE",
    xrootd_sharedkey => "A32TO64CHARACTERKEYTESTTESTTESTTEST",
    site_name => "CERN_DPM_TEST",
    new_installation => true,
