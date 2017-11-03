@@ -16,7 +16,7 @@ class{"dpm::head_disknode":
    filesystems => ["mypool:${fqdn}:/srv/dpm/01"],
    configure_dome => true,
    configure_domeadapter => true,
-   configure_legacy => true,
+   configure_legacy => false,
    memcached_enabled => false,
    host_dn => "/DC=ch/DC=cern/OU=computers/CN=${fqdn}"
 }

@@ -14,9 +14,7 @@ class{"dpm::head_disknode":
    mountpoints => ['/srv/dpm','/srv/dpm/01'],
    pools => ['mypool:100M'],
    filesystems => ["mypool:${fqdn}:/srv/dpm/01"],
-   configure_dome => true,
-   configure_domeadapter => true,
-   configure_legacy => true,
-   memcached_enabled => false,
-   host_dn => "/DC=ch/DC=cern/OU=computers/CN=${fqdn}"
+   configure_dome => false,
+   configure_domeadapter => false,
+   configure_legacy => true
 }
